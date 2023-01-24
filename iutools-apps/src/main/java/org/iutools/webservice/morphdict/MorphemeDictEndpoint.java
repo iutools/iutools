@@ -55,70 +55,72 @@ public class MorphemeDictEndpoint
 
 	private MorphemeDictResult findExamples(
 		MorphemeDictInputs inputs, String corpusName)
-		throws MorphemeDictException {
+			throws ServiceException {
 		Logger tLogger = LogManager.getLogger("org.iutools.webservice.OccurenceSearchEndpoint.getOccurrences");
 
 		tLogger.trace("invoked with inputs.canonicalForm="+inputs.canonicalForm +", inputs.nbExamples="+inputs.nbExamples);
 
 		tLogger.trace("Creating the MorphemeDictionary instance");
 		MorphemeDictResult results = new MorphemeDictResult();
-		try {
-
-			MorphemeDictionary morphExtractor = new MorphemeDictionary();
-
-			tLogger.trace("Loading the corpus");
-			CompiledCorpus compiledCorpus =
-				new CompiledCorpusRegistry().getCorpus();
-			morphExtractor.useCorpus(compiledCorpus);
-			tLogger.trace("Using corpus of type="+compiledCorpus.getClass());
-
-			int nbExamples = 20;
-			if (inputs.nbExamples != null) {
-				nbExamples = Integer.valueOf(inputs.nbExamples);
-			}
-			morphExtractor.setNbDisplayedWords(nbExamples);
-
-			tLogger.trace("Finding words that contain the morpheme");
-			Integer maxExamples = null;
+		if (inputs.canonicalIsIUText) {
 			try {
-				maxExamples = Integer.parseInt(inputs.nbExamples);
-			} catch (Exception e) {
-				// If the nbExamples input was not a string representation of an
-				// integer, then just ignore it.
-			}
+				MorphemeDictionary morphExtractor = new MorphemeDictionary();
 
-			List<MorphDictionaryEntry> wordsForMorphemes =
-				morphExtractor.search(inputs.canonicalForm, inputs.grammar, inputs.meaning,
-					nbExamples);
+				tLogger.trace("Loading the corpus");
+				CompiledCorpus compiledCorpus =
+						new CompiledCorpusRegistry().getCorpus();
+				morphExtractor.useCorpus(compiledCorpus);
+				tLogger.trace("Using corpus of type=" + compiledCorpus.getClass());
 
-			LinguisticData linguisticData = LinguisticData.getInstance();
-			tLogger.trace("wordsForMorphemes: "+wordsForMorphemes.size());
-			Iterator<MorphDictionaryEntry> itWFM = wordsForMorphemes.iterator();
-			while (itWFM.hasNext()) {
-				MorphDictionaryEntry w = itWFM.next();
-				String morphID = w.morphemeWithId;
-				if (linguisticData.getMorpheme(morphID).isComposite()) {
-					// We only list the non-composite morphemes
-					continue;
+				int nbExamples = 20;
+				if (inputs.nbExamples != null) {
+					nbExamples = Integer.valueOf(inputs.nbExamples);
 				}
-				String morphMeaning = Morpheme.getMorpheme(morphID).englishMeaning;
-				tLogger.trace("morphID: "+morphID+", morphMeaning: "+morphMeaning);
-				MorphemeHumanReadableDescr morphDescr =
-					new MorphemeHumanReadableDescr(morphID, morphMeaning);
-				results.matchingMorphemes.add(morphDescr);
+				morphExtractor.setNbDisplayedWords(nbExamples);
 
-				List<MorphWordExample> wordsAndFreqs = w.words;
-				tLogger.trace("wordsAndFreqs: "+wordsAndFreqs.size());
-				List<String> words = new ArrayList<String>();
-				for (MorphWordExample example : wordsAndFreqs) {
-					tLogger.trace("example.word: "+example.word);
-					words.add(example.word);
+				tLogger.trace("Finding words that contain the morpheme");
+				Integer maxExamples = null;
+				try {
+					maxExamples = Integer.parseInt(inputs.nbExamples);
+				} catch (Exception e) {
+					// If the nbExamples input was not a string representation of an
+					// integer, then just ignore it.
 				}
-				results.examplesForMorpheme.put(
-					w.morphemeWithId, words.toArray(new String[0]));
+
+				List<MorphDictionaryEntry> wordsForMorphemes =
+					morphExtractor.search(inputs.canonicalFormRoman, inputs.grammar, inputs.meaning, nbExamples);
+
+				LinguisticData linguisticData = LinguisticData.getInstance();
+				tLogger.trace("wordsForMorphemes: " + wordsForMorphemes.size());
+				Iterator<MorphDictionaryEntry> itWFM = wordsForMorphemes.iterator();
+				while (itWFM.hasNext()) {
+					MorphDictionaryEntry w = itWFM.next();
+					String morphID = w.morphemeWithId;
+					if (linguisticData.getMorpheme(morphID).isComposite()) {
+						// We only list the non-composite morphemes
+						continue;
+					}
+					String morphMeaning = Morpheme.getMorpheme(morphID).englishMeaning;
+					tLogger.trace("morphID: " + morphID + ", morphMeaning: " + morphMeaning);
+					MorphemeHumanReadableDescr morphDescr =
+							new MorphemeHumanReadableDescr(morphID, morphMeaning);
+					results.matchingMorphemes.add(morphDescr);
+
+					List<MorphWordExample> wordsAndFreqs = w.words;
+					tLogger.trace("wordsAndFreqs: " + wordsAndFreqs.size());
+					List<String> words = new ArrayList<String>();
+					for (MorphWordExample example : wordsAndFreqs) {
+						tLogger.trace("example.word: " + example.word);
+						words.add(example.word);
+					}
+					results.examplesForMorpheme.put(
+							w.morphemeWithId, words.toArray(new String[0]));
+				}
+				results.ensureScript(inputs.iuAlphabet);
+			} catch (MorphemeDictionaryException | CompiledCorpusException | IOException | MorphemeException |
+					 LinguisticDataException | CompiledCorpusRegistryException e) {
+				throw new MorphemeDictException(e);
 			}
-		} catch (MorphemeDictionaryException | CompiledCorpusException | IOException | MorphemeException | LinguisticDataException | CompiledCorpusRegistryException e) {
-			throw new MorphemeDictException(e);
 		}
 		tLogger.trace("end of method");
 		return results;

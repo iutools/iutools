@@ -1,12 +1,13 @@
 package org.iutools.linguisticdata;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.script.TransCoder;
+import org.iutools.script.TransCoderException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -387,5 +388,14 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 	@Override
 	public int compareTo(@NotNull MorphemeHumanReadableDescr o) {
 		return this.id.compareTo(o.id);
+	}
+
+	public void ensureScript(TransCoder.Script inScript) throws MorphemeException {
+		try {
+			canonicalForm = TransCoder.ensureScript(inScript, canonicalForm);
+		} catch (TransCoderException e) {
+			throw new MorphemeException(e);
+		}
+
 	}
 }

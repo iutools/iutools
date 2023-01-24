@@ -4,8 +4,12 @@ import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
+import static org.iutools.script.TransCoder.Script;
+
+import org.iutools.script.TransCoder;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.*;
 
@@ -45,8 +49,8 @@ public class AssertMorphemeDictResult extends AssertEndpointResult {
 			expIDs, gotIDs);
 
 		return this;
-
 	}
+
 	public AssertMorphemeDictResult matchingMorphemesAre(
 		Pair<String,String>... expIDsAndDefs) throws Exception {
 
@@ -62,6 +66,34 @@ public class AssertMorphemeDictResult extends AssertEndpointResult {
 			"Descriptions of matching morphemes were wrong.",
 			expMorphemes, gotMorphemes);
 
+		return this;
+	}
+
+	public AssertMorphemeDictResult matchingMorphCanonicalsAre(String[] expCanonicalsArr) throws Exception {
+		Set<MorphemeHumanReadableDescr> gotMorphemes = result().matchingMorphemesDescr();
+		Set<String> gotCanonicals = new HashSet<>();
+		for (MorphemeHumanReadableDescr descr: gotMorphemes) {
+			gotCanonicals.add(descr.canonicalForm);
+		}
+		Set<String> expCanonicals = new HashSet<>();
+		Collections.addAll(expCanonicals, expCanonicalsArr);
+		AssertSet.assertEquals(
+			"Morpheme canonical forms were wrong.",
+			expCanonicals, gotCanonicals);
+
+		return this;
+
+	}
+
+	public AssertMorphemeDictResult examplesAreInScript(Script expScript) {
+		for (String morphID: result().examplesForMorpheme.keySet()) {
+			String[] examples = result().examplesForMorpheme.get(morphID);
+			for (String anExample: examples) {
+				Script gotScript = TransCoder.textScript(anExample);
+				Assertions.assertEquals(expScript, gotScript,
+						baseMessage+"\nExample "+anExample+" for morpheme "+morphID+" was not in the expected IU script.");
+			}
+		}
 		return this;
 	}
 }

@@ -161,3 +161,13 @@ iutools/iutools-apps/src/main/webapp_):
   - Use _defaultSkin.jsp_ as a model
 - Custom styles file: _css/_custom-styles.jsp_  
   - Just override styles defined in _design-styles.css_
+
+## Testing improvements to the Portage IU-EN word aligner
+
+The IUTools TranslationMemory and MachineGeneratedDictionary make heavy use of the word-level alignment produced 
+by Portage and stored in the the various .tm.json files.
+
+Below is a producedure which you can use to generate a test set that can be used to evaluate the peformance of a new 
+version of the Portage aligner, in the context of IUTools.
+
+_DETAILS TO COME__

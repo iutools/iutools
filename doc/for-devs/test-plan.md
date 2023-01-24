@@ -577,15 +577,12 @@ Search with all empty fields
 - Should output an error message saying that you should enter a value for at least one of the above.
   
 Change preferred script
-- __BUG:__ As of 2022-11-30, the example words are always displayed in Roman
-  This is not that big a deal since learners usually prefer to see the words 
-  in ROMAN
 - Set preferred script = ROMAN
   - Search for tut
-  - Make sure the example words are displayed in ROMAN   
+  - Make sure the morphemes AND example words are displayed in ROMAN   
 - Set preferred script = SYLLABIC
   - Search for tut
-  - Make sure the example words are displayed in SYLLABIC   
+  - Make sure the morphemes AND example words are displayed in SYLLABIC   
   
 Submit form with Enter key
 - Enter morpheme canonical='tut', then PRESS ENTER

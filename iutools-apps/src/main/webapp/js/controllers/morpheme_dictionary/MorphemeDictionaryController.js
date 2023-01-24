@@ -108,7 +108,8 @@ class MorphemeDictionaryController extends IUToolsController {
 			grammar: grammar,
 			meaning: meaning,
             corpusName: corpusName,
-            nbExamples: nbExamples
+            nbExamples: nbExamples,
+			iuAlphabet: new SettingsController().iuAlphabet(),
         };
 
 		return request;
@@ -209,20 +210,27 @@ class MorphemeDictionaryController extends IUToolsController {
 	
 	validateQueryInput() {
 		var isValid = true;
-		var query = this.elementForProp("inpMorpheme").val();
+		var canonicalForm = this.elementForProp("inpMorpheme").val();
 		var grammar = this.elementForProp("inpGrammar").val();
 		var meaning = this.elementForProp("inpMeaning").val();
-		if ((query == null || query === "") && (grammar == null || grammar === "") &&
+
+		// First, make sure that at least one of canonicalForm, grammar or meaning is not empty.
+		//
+		if ((canonicalForm == null || canonicalForm === "") && (grammar == null || grammar === "") &&
 			(meaning == null || meaning === "")) {
 			isValid = false;
 			this.error("You need to enter a value for at least one of the following: 'canonical form', 'grammar' or 'meaning'");
 		}
-        var nbExamples = this.elementForProp("inpNbExamples").val().trim();
-        var parsed = parseInt(nbExamples, 10);
-        if (isNaN(parsed)) {
-            isValid = false;
-			this.error("Field 'Max examples' must be a number");
-        }
+
+		// Next, make sure the nb of examples is a number.
+		if (isValid) {
+			var nbExamples = this.elementForProp("inpNbExamples").val().trim();
+			var parsed = parseInt(nbExamples, 10);
+			if (isNaN(parsed)) {
+				isValid = false;
+				this.error("Field 'Max examples' must be a number");
+			}
+		}
 
 		return isValid;
 	}

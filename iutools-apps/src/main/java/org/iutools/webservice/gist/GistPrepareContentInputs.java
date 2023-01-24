@@ -41,6 +41,7 @@ public class GistPrepareContentInputs extends ServiceInputs {
 		return answer;
 	}
 
+	@Override
 	public Map<String, Object> summarizeForLogging() throws ServiceException {
 
 		Map<String,Object> summary = asMap();

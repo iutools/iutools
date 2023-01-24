@@ -116,7 +116,7 @@ class SpellController extends IUToolsController {
 	 */
 	tokenizeThenSpellCheck() {
 		var data = this.tokenizeRequestData();
-        this.userActionStart("SPELL", 'srv2/tokenize', data,
+        this.userActionStart("SPELL", 'srv2/tokenize/tokenize', data,
             this.cbkTokenizeSuccess, this.cbkTokenizeFailure);
 	}
 

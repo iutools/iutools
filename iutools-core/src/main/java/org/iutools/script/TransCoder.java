@@ -16,12 +16,14 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 //import org.apache.logging.log4j.LogManager;
 
+import ca.nrc.datastructure.Cloner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.html.HtmlEntities;
@@ -613,6 +615,21 @@ public class TransCoder {
     	return convertedTexts;
 	 }
 
+
+    public static <T> Map<String, T> ensureKeysScript(
+    	Script script, Map<String, T> origMap) throws TransCoderException {
+        Map<String, T> convertedMap = null;
+        try {
+            convertedMap = Cloner.clone(origMap);
+            for (Map.Entry<String, T> entry : origMap.entrySet()) {
+                String convertedKey = ensureScript(script, entry.getKey());
+                convertedMap.put(convertedKey, entry.getValue());
+            }
+        } catch (Cloner.ClonerException e) {
+            throw new TransCoderException(e);
+        }
+        return convertedMap;
+	 }
 
 
 		public static String ensureScript(Script script, String text) throws TransCoderException {

@@ -3,11 +3,14 @@ package org.iutools.webservice.morphdict;
 import ca.nrc.testing.RunOnCases;
 import static ca.nrc.testing.RunOnCases.Case;
 import org.apache.commons.lang3.tuple.Pair;
+import static org.iutools.script.TransCoder.Script;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.EndpointTest;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class MorphemeDictEndpointTest extends EndpointTest {
@@ -84,44 +87,72 @@ public class MorphemeDictEndpointTest extends EndpointTest {
 
 	@Test
 	public void test__MorphemeExamplesEndpoint__VariousCases() throws Exception {
-		Case[] cases = new RunOnCases.Case[] {
+		CaseMorphemeDictEndpoint[] cases = new CaseMorphemeDictEndpoint[] {
 
-			new Case("Just canonical form; form has exact matches and more", "tut", null, null,
-				"tut/1v", "tut/tn-sim-s", "tutaq/1n", "tuti/1v", "tutik/1v"),
+			new CaseMorphemeDictEndpoint(
+				"Just canonical form; form has exact matches and more",
+				"tut", null, null)
+				.morphIDsAre("tut/1v", "tut/tn-sim-s", "tutaq/1n", "tuti/1v", "tutik/1v")
+				.morphCanonicalsAre("tut", "tut", "tutaq", "tuti", "tutik"),
 
-			new Case("Just canonical form; form only has matches that start with that form",
-		"titi", null, null,
-				"titiq/1v", "titiqqartalik/1n"),
+			new CaseMorphemeDictEndpoint(
+				"Just canonical form; form only has matches that start with that form",
+				"titi", null, null)
+				.morphIDsAre("titiq/1v", "titiqqartalik/1n")
+				.morphCanonicalsAre("titiq", "titiqqartalik"),
 
-			new Case("canonical form + grammar", "tut", "verb", null,
-				"tut/1v", "tuti/1v", "tutik/1v"),
+			new CaseMorphemeDictEndpoint("canonical form + grammar",
+				"tut", "verb", null)
+				.morphIDsAre("tut/1v", "tuti/1v", "tutik/1v")
+				.morphCanonicalsAre("tut", "tuti", "tutik"),
 
-			new Case("canonical form + meaning", "tut", null, "step",
-				"tuti/1v"),
 
-			new Case("grammar + meaning", null, "verb", "step",
-				"abluq/1v", "tuti/1v"),
+			new CaseMorphemeDictEndpoint("canonical form + meaning",
+				"tut", null, "step")
+				.morphIDsAre("tuti/1v")
+				.morphCanonicalsAre("tuti"),
 
-			new Case("canonical + grammar + meaning", "tut", "verb", "step",
-				"tuti/1v"),
+			new CaseMorphemeDictEndpoint("grammar + meaning",
+				null, "verb", "step")
+				.morphIDsAre("abluq/1v", "tuti/1v")
+				.morphCanonicalsAre("abluq", "tuti"),
+
+			new CaseMorphemeDictEndpoint("canonical + grammar + meaning",
+				"tut", "verb", "step")
+				.morphIDsAre("tuti/1v")
+				.morphCanonicalsAre("tuti"),
+
+			new CaseMorphemeDictEndpoint("Output in Syll",
+				"tut", null, null)
+				.useScript(Script.SYLLABIC)
+				.morphIDsAre("tut/1v", "tut/tn-sim-s", "tutaq/1n",
+					"tuti/1v", "tutik/1v")
+				.morphCanonicalsAre("ᑐᑦ", "ᑐᑦ", "ᑐᑕᖅ", "ᑐᑎ", "ᑐᑎᒃ"),
+
+			new CaseMorphemeDictEndpoint("Input in Syll, output in ROMAN",
+				"ᑐᑦ", null, null)
+				.useScript(Script.ROMAN)
+				.morphIDsAre("tut/1v", "tut/tn-sim-s", "tutaq/1n", "tuti/1v", "tutik/1v")
+				.morphCanonicalsAre("tut", "tutaq", "tuti", "tutik"),
+
+			new CaseMorphemeDictEndpoint("Input not IU text",
+				"hello", null, null),
 		};
 
-		Consumer<Case> runner = (caze) -> {
-			String canonical = (String)caze.data[0];
-			String grammar = (String)caze.data[1];
-			String meaning = (String)caze.data[2];
-			String[] expMorphemes = new String[caze.data.length-3];
-			for (int ii=3; ii < caze.data.length; ii++) {
-				expMorphemes[ii-3] = (String)caze.data[ii];
-			}
-
+		Consumer<Case> runner = (caseUncast) -> {
+			CaseMorphemeDictEndpoint caze = (CaseMorphemeDictEndpoint)caseUncast;
 			try {
-				MorphemeDictInputs examplesInputs =
-					new MorphemeDictInputs(canonical, grammar, meaning, "compiled_corpus", "2");
+				MorphemeDictInputs inputs =
+					new MorphemeDictInputs(caze.canonicalForm, caze.grammar, caze.meaning,
+						"compiled_corpus", "2");
+				inputs.setIUAlphabet(caze.outputScript);
 
-  				EndpointResult epResponse = endPoint.execute(examplesInputs);
-				new AssertMorphemeDictResult(epResponse)
-					.matchingMorphIDsAre(expMorphemes);
+  				EndpointResult epResponse = endPoint.execute(inputs);
+				AssertMorphemeDictResult asserter = new AssertMorphemeDictResult(epResponse)
+					.matchingMorphIDsAre(caze.expMorphIDs)
+					.matchingMorphCanonicalsAre(caze.expMorphCanonicals)
+					.examplesAreInScript(caze.outputScript);
+
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -129,7 +160,52 @@ public class MorphemeDictEndpointTest extends EndpointTest {
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(5)
+//			.onlyCaseNums(7)
+//			.onlyCasesWithDescr("Input in Syll, output in ROMAN")
 			.run();
+	}
+
+	//////////////////////////////////////////
+	// TEST HELPERS
+	//////////////////////////////////////////
+
+	public static class CaseMorphemeDictEndpoint extends Case {
+
+		public String canonicalForm = null;
+		public String grammar = null;
+		public String meaning = null;
+		public Script outputScript = Script.ROMAN;
+
+		public String[] expMorphIDs = new String[0];
+		public String[] expMorphCanonicals = new String[0];
+
+		public Map<String,String[]> expExamplesIndex = new HashMap<>();
+
+		public CaseMorphemeDictEndpoint(String _descr, String _canonicalForm, String _grammar, String _meaning) {
+			super(_descr, null);
+			this.canonicalForm = _canonicalForm;
+			this.grammar = _grammar;
+			this.meaning = _meaning;
+		}
+
+		public CaseMorphemeDictEndpoint useScript(Script _outputScript) {
+			this.outputScript = _outputScript;
+			return this;
+		}
+
+		public CaseMorphemeDictEndpoint morphIDsAre(String... _expMorphIDs) {
+			this.expMorphIDs = _expMorphIDs;
+			return this;
+		}
+		public CaseMorphemeDictEndpoint morphCanonicalsAre(String... _expMorphCanonicals) {
+			this.expMorphCanonicals = _expMorphCanonicals;
+			return this;
+		}
+
+		public CaseMorphemeDictEndpoint providesExamples(String morphID, String... expExamples) {
+			expExamplesIndex.put(morphID, expExamples);
+			return this;
+		}
+
 	}
 }

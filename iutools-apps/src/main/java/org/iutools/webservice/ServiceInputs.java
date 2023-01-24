@@ -32,7 +32,9 @@ public class ServiceInputs {
 	private ObjectMapper mapper = new ObjectMapper();
 
 	public ServiceInputs setIUAlphabet(Script script) {
-		this.iuAlphabet = script;
+		if (script != null) {
+			this.iuAlphabet = script;
+		}
 		return this;
 	}
 

@@ -18,7 +18,7 @@ public class MorphemeDictInputsTest extends ServiceInputsTest {
 		ServiceInputs inputs =
 			new MorphemeDictInputs("siuq", (String)null, "50");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":null,\"_taskID\":null,\"_taskStartTime\":null,\"canonicalForm\":\"siuq\",\"corpusName\":null,\"grammar\":null,\"iuAlphabet\":null,\"meaning\":null,\"nbExamples\":\"50\",\"taskElapsedMsecs\":null}");
+			.logSummaryIs("{\"_action\":null,\"_taskID\":null,\"_taskStartTime\":null,\"canonicalForm\":\"siuq\",\"grammar\":null,\"iuAlphabet\":\"ROMAN\",\"meaning\":null,\"nbExamples\":\"50\",\"taskElapsedMsecs\":null}");
 			;
 	}
 }
