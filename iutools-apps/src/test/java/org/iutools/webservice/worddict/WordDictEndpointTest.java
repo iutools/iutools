@@ -109,11 +109,13 @@ public class WordDictEndpointTest extends EndpointTest {
 		WordDictInputs inputs =
 			new WordDictInputs(query)
 			.setExactWordLookup(false);
+		inputs.setIUAlphabet(TransCoder.Script.ROMAN);
+
 		WordDictResult epResult = (WordDictResult) endPoint.executeThenConvert(inputs);
 
 		new AssertWordDictResult(epResult)
 			.raisesNoError()
-			.foundWords("inuk", "inuksuk", "inuktituuqtut", "inuktituusuunit");
+			.foundWords("inuk", "inuksuk", "inuktut", "inuktaluk");
 
 		new AssertMDictEntry(epResult.queryWordEntry)
 			.isForWord("inuk")
@@ -152,7 +154,7 @@ public class WordDictEndpointTest extends EndpointTest {
 
 		new AssertWordDictResult(epResult)
 			.raisesNoError()
-			.foundWords("ᐃᓄᒃ", "ᐃᓄᒃᓱᒃ", "ᐃᓄᒃᑎᑑᖅᑐᑦ", "ᐃᓄᒃᑎᑑᓲᓂᑦ");
+			.foundWords("ᐃᓄᒃ", "ᐃᓄᒃᓱᒃ", "ᐃᓄᒃᑐᑦ", "ᐃᓄᒃᑕᓗᒃ");
 
 		new AssertMDictEntry(epResult.queryWordEntry)
 			.isForWord("ᐃᓄᒃ")

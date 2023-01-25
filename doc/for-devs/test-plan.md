@@ -288,7 +288,7 @@ Word Entry window hiding/showing/closing
 - Leaving the word entry opened, search for a word that does not return any 
   results like 'blahblahblah' 
    - Make sure the Word Entry window is NOT showing
-- Search again for 'education' to make sure the WordEntry window is shown
+- Search again for 'inuksuk' to make sure the WordEntry window is shown
 - Search for a query that returns some hits but is not itself a word, ex: lang=IU, word='iglum'
   - Make sure that some hits are displayed, but that the Word Entry window is NOT SHOWN
 - Close the word info windows

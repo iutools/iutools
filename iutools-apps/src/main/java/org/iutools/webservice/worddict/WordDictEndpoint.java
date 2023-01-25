@@ -15,6 +15,7 @@ import org.iutools.webservice.ServiceException;
 import org.iutools.worddict.MDictEntry;
 import org.iutools.worddict.MachineGeneratedDict;
 import org.iutools.worddict.MachineGeneratedDictException;
+import org.iutools.worddict.WordDictSearchResult;
 
 import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
@@ -91,32 +92,12 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 
 		WordDictResult result = null;
 		try {
-			Long totalWords = null;
-			List<String> topWords = null;
 			MDictEntry firstWordEntry = null;
 			MachineGeneratedDict dict = new MachineGeneratedDict();
+			WordDictSearchResult dicResults = dict.search(inputs.word, inputs.lang, 10);
+			Long totalWords = dicResults.totalWords;
+			List<String> topWords = dicResults.hits;
 
-			Pair<CloseableIterator<String>, Long> searchResults =
-				dict.searchIter(inputs.word, inputs.lang);
-			totalWords = searchResults.getRight();
-			try (CloseableIterator<String> wordsIter = searchResults.getLeft()) {
-				topWords = new ArrayList<String>();
-				while (wordsIter.hasNext() && topWords.size() < 10) {
-					topWords.add(wordsIter.next());
-				}
-			}
-
-			if (!topWords.contains(inputs.word)) {
-				// The query word was not one of the most frequents hits in the corpus.
-				// Check if it's correctly spelled and if so, add it to the list
-				// of matching words.
-				MDictEntry exactWordEntry =
-					dict.entry4word(inputs.word, inputs.lang);
-				if (!exactWordEntry.isMisspelled()) {
-					topWords.add(0, inputs.word);
-					firstWordEntry = exactWordEntry;
-				}
-			}
 			if (inputs.lang.equals("iu")) {
 				topWords = (List<String>) TransCoder.ensureScript(inputs.iuAlphabet, topWords);
 			}

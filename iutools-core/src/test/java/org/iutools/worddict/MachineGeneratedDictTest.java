@@ -45,6 +45,13 @@ public class MachineGeneratedDictTest {
 			new Case("iu world with shallow spelling mistake --> should autocorrect",
 				"iu", "ᐃᓕᓐᓂᐊᕐᑭᑎ", 1,
 				new String[] {"ᐃᓕᓐᓂᐊᕿᑎ"}),
+			new Case("Capitalized IU word whose capitalized version was seen in corpus (Nunavut) --> Uppercased version should come first",
+				"iu", "Nunavut", 20,
+				new String[] {"Nunavut", "nunavut"}),
+			new Case("Capitalized IU word whose capitalized version was NOT seen in corpus, but whose lowecased version WAS (Ammuumajuq) --> Capitalized version should come first",
+				"iu", "Ammuumajuq", 10,
+				new String[] {"Ammuumajuq", "ammuumajuqtarniq"}),
+
 		};
 
 		// Cases for entry4word function
@@ -505,7 +512,7 @@ public class MachineGeneratedDictTest {
 			}
 		};
 		new RunOnCases(cases_search, runner)
-//			.onlyCaseNums(5)
+//			.onlyCaseNums(7)
 //			.onlyCasesWithDescr("iu-out-of-vocab-yet-valid-dict-word")
 			.run();
 	}

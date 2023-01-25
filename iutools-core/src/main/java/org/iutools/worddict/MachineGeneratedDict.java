@@ -710,8 +710,7 @@ public class MachineGeneratedDict {
 		}
 
 		results.hits = sortHits(results.hits);
-		adjustPartialWordInHits(results.hits, partialWord, lang);
-		adjustPartialWordInHitsNEW(results);
+		adjustPartialWordInHits(results);
 
 		return results;
 	}
@@ -731,33 +730,7 @@ public class MachineGeneratedDict {
 	/** Ensure that:
 	 * - partialWord is in the list of hits, IF it is a valid IU word
 	 * - comes first IF it is in the list*/
-	private void adjustPartialWordInHits(List<String> hits, String partialWord, String lang) throws MachineGeneratedDictException, TranslationMemoryException {
-		String partialWordID = new WordInfo(partialWord).getIdWithoutType();
-		if (!hits.contains(partialWordID)) {
-			// The top list of hits did not contain an exact match.
-			// Check to see if the exact match COULD have been found if
-			// we had gone further, OR if the word analyzes as an IU word
-			try {
-				if (wordExists(partialWord, lang) ||
-					(lang.equals("iu") &&  morphAnalyzer().isDecomposable(partialWord))) {
-					hits.add(0, partialWord);
-				}
-			} catch (MorphologicalAnalyzerException e) {
-				throw new MachineGeneratedDictException(e);
-			}
-		}
-
-		if (hits.contains(partialWordID)) {
-			// If we found an exact match, make sure it comes first.
-			hits.remove(partialWordID);
-			hits.add(0, partialWordID);
-		}
-	}
-
-	/** Ensure that:
-	 * - partialWord is in the list of hits, IF it is a valid IU word
-	 * - comes first IF it is in the list*/
-	private void adjustPartialWordInHitsNEW(WordDictSearchResult searchResults) throws MachineGeneratedDictException, TranslationMemoryException {
+	private void adjustPartialWordInHits(WordDictSearchResult searchResults) throws MachineGeneratedDictException, TranslationMemoryException {
 		String partialWord = searchResults.spellCheckedQuery;
 		String lang = searchResults.lang;
 		String partialWordID = new WordInfo(partialWord).getIdWithoutType();

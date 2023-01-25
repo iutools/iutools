@@ -90,8 +90,6 @@ public class DictEvaluationTest {
 		AssertRuntime.runtimeHasNotChanged(
 			results.avgSecsPerEntryPresent, 0.40,
 			"avg secs for retrieving a dict entry", testInfo);
-
-
 	}
 
 	////////////////////////////////////////////

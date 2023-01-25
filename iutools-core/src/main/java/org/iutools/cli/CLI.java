@@ -449,7 +449,13 @@ public class CLI {
 				;
 		mainCmd.addSubCommand(wordInfo);
 
-		// Show information about a word found in a given corpus
+		// Provide summary statistics on glossaries.
+	  	SubCommand glossSummary =
+			new CmdGlossLookup("glossary_summary")
+			;
+		mainCmd.addSubCommand(glossSummary);
+
+		// Show information about a word found in one of the glossaries
 		SubCommand glossLookup =
 				new CmdGlossLookup("glossary_lookup")
 					.addOption(optLang)
