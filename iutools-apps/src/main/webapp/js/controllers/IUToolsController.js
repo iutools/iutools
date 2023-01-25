@@ -4,9 +4,12 @@
 
 class IUToolsController extends WidgetController {
 
+    static feedbackLinkWasSet = false;
+
     constructor(config) {
         super(config);
         this.recentlyLogged = [];
+        this.setupFeedbackLink();
     }
 
     error(err) {
@@ -166,5 +169,34 @@ class IUToolsController extends WidgetController {
             error: fctFailure
         });
         return;
+    }
+
+    setupFeedbackLink() {
+        if (!IUToolsController.feedbackLinkWasSet) {
+            var sendTo = this.feedbackSentTo();
+            var link = $("#a_feedback_link");
+            if (sendTo != null) {
+                link.attr("href", sendTo);
+            } else {
+                link.attr("onclick", "alert('Unable to send feedback (no recipient addresses configured)')");
+            }
+        }
+        IUToolsController.feedbackLinkWasSet = true;
+    }
+
+    feedbackSentTo() {
+        var mailtoUrl = null;
+
+        if (typeof iutoolsConfig !== 'undefined' && iutoolsConfig != null && iutoolsConfig.feedbackEmails != null && iutoolsConfig.feedbackEmails.length > 0) {
+            mailtoUrl = "mailto:";
+            for (var ii=0; ii < iutoolsConfig.feedbackEmails.length; ii++) {
+                if (ii > 0) {
+                    mailtoUrl += ";";
+                }
+                mailtoUrl += iutoolsConfig.feedbackEmails[ii];
+            }
+            mailtoUrl += "?subject=Inuktitut Tools Feedback";
+        }
+        return mailtoUrl;
     }
 }

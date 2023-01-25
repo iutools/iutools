@@ -1,16 +1,6 @@
-<%--<h1>START: /pages/common/_defaultSkin.jsp</h1>--%>
 
-<%--<b>/pages/common/_defaultSkin.jsp</b> Received:--%>
-<%--<ul>--%>
-<%--    <li>param.pageName='${param.pageName}'</li>--%>
-<%--    <li>request.getParameter("pageName")=<%= request.getParameter("pageName") %>--%>
-<%--    <li>param.pageTitle='${param.pageTitle}'</li>--%>
-<%--    <li>request.getParameter("pageTitle")=<%= request.getParameter("pageTitle") %>--%>
-<%--    </li>--%>
-<%--</ul>--%>
-
-<!-- START: "Skin" of the page -->
-<!-- Modify this file to change the IUToools skin -->
+<!-- START: Default "skin" of the page -->
+<!-- Modify this file to change the IUToools default skin -->
 
 <div id="header" class="header">
   <div id="header_inner">
@@ -24,7 +14,7 @@
   <button class="menu-toggle"><span></span><span></span><span></span></button>
   <ul id="main_nav_menu">
     <li id="home_link"><a href="index.html">Home</a></li>
-    <li id="feedback_link"><a target="#iutools_feeback" href="mailto:alaindesilets0@gmail.com;contact@inuktitutcomputing.ca?subject=Inuktitut Tools Feedback">Send Feedback</a></li>
+    <li id="feedback_link"><a id="a_feedback_link" target="#iutools_feeback">Send Feedback</a></li>
     <li id="other_tools">
       <button id="mnu-other-tools" class="drop-menu-toggle">Other Inuktut Tools</button>
       <ul class="drop-menu">

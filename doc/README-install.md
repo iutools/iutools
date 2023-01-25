@@ -285,7 +285,7 @@ If you do plan to use the web apps, then there are more steps involved.
 - Install and configure Tomcat
 - Set file permissions
 - Deploy the _iutools_ web apps
-- OPTIONAL: Enable the Inuktut Web Search app
+- Configure the _Send feedback_ link
 
 ### Install and configure Tomcat
 
@@ -324,4 +324,16 @@ To deploy (or redeploy) the _iutools_ web apps, issue the following commands:
     
 Note that this script requires that you define certain environment variables. If 
 they are not defined, the script will notify you of the missing ones.    
+
+### Configure the _Send feedback_ link
+
+By default, the _Send feedback_ link popus up an alert saying that feedback cannot be sent, because there  
+no adressees for the feedback message.
+
+To activate the _Send feedback_ message, create a file called _iutools_config.js_ under your tomcat's 
+_webapps/iutools/js_ directory. In it, write this:
+
+     iutoolsConfig = {
+        feedbackEmails: ["email1", "email2", etc...]
+     };
 

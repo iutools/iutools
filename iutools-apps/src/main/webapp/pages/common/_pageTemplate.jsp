@@ -81,6 +81,8 @@ reloading -->
 <script src="./js/controllers/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/controllers/FloatingWindowController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
+<script src="./js/iutools_config.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+
 <!-- This one must be before any other controller -->
 <script src="./js/controllers/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
