@@ -4,6 +4,7 @@ import ca.nrc.config.ConfigException;
 import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.data.file.ObjectStreamReaderException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.config.IUConfig;
@@ -15,10 +16,7 @@ import org.iutools.utilities.StopWatchException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /** Human-generated glossary of en-iu terms
@@ -35,6 +33,8 @@ public class Glossary {
 	private static Glossary _singleton = null;
 
 	private static ObjectMapper mapper = new ObjectMapper();
+
+	public Set<String> allLanguages = new HashSet<>();
 
 
 	public Glossary() throws GlossaryException {
@@ -134,8 +134,23 @@ public class Glossary {
 		return files;
 	}
 
+	public static Pair<String,String> parseTermDescription(String termDescr) throws GlossaryException {
+		Pair<String,String> parsed = null;
+		String[] components = termDescr.split(":");
+		if (components.length > 2) {
+			throw new GlossaryException("Invalid term description: "+termDescr);
+		} else {
+			if (components.length == 2) {
+				parsed = Pair.of(components[0], components[1]);
+			} else {
+				parsed = Pair.of(null, termDescr);
+			}
+		}
+		return parsed;
+	}
 
-	private Glossary loadFile(File file) throws GlossaryException {
+
+	Glossary loadFile(File file) throws GlossaryException {
 		try {
 			ObjectStreamReader reader = new ObjectStreamReader(file);
 			GlossaryEntry entry = null;
@@ -158,6 +173,7 @@ public class Glossary {
 			logger.trace("Read glossary entry: "+newEntry);
 		}
 		for (String lang: newEntry.availableLanguages()) {
+			allLanguages.add(lang);
 			for (String term: newEntry.termsInLang(lang)) {
 				String key = null;
 				try {
@@ -197,5 +213,9 @@ public class Glossary {
 		}
 
 		return entries;
+	}
+
+	public Set<String> allTerms() {
+		return term2entries.keySet();
 	}
 }

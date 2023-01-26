@@ -451,17 +451,19 @@ Progress Wheel
   - Copy text to text editor, and make sure that the changed spellings are the 
     ones that appear in the editor
     
-Check with and without _Include partial corrections_
-- Spell check nunavvvvut
+Check with Levels 2 and 3
+- Spell check nunavvvvut at levels 2 and 3
   - With and without partial correction
-    - WITH: the following entry should be included nunav[vv]ut
-    - WITHOUT: It should NOT appear
+  - Make sure the suggestions make sense
     
 Spell check text that is too large
-- Try to spell check a text with > 500 words
-- Check that the system prints an error message that says you have to split the
-  text into smaller chunks. 
-  
+- Try to spell check Level 1 with a text with > 5,000 words
+  - Check that the system prints an error message that says you have to split the
+    text into smaller chunks. 
+- Try to spell check Level 2 and 3 with a text with > 500 words
+  - Check that the system prints an error message that says you have to split the
+    text into smaller chunks.
+
 Choose corrrection after closing suggestions box
 - Click on a bad word
 - Click on the X to close the suggestions window

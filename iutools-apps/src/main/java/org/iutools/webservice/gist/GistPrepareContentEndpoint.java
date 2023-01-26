@@ -56,7 +56,7 @@ public class GistPrepareContentEndpoint
 	}
 
 	private void doPrepareActualText(GistPrepareContentInputs inputs,
-												GistPrepareContentResult result) {
+		GistPrepareContentResult result) {
 
 		String text = inputs.textOrUrl;
 		text = TransCoder.ensureRoman(text);

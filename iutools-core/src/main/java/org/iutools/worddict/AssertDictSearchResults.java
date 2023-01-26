@@ -39,8 +39,15 @@ protected String[] resultingWords() {
 
 	public AssertDictSearchResults containsAtLeast(Integer expMinWords) {
 		AssertNumber.isGreaterOrEqualTo(
-			baseMessage+"\nSearch results contained less hits than expected",
+			baseMessage+"\nList of hits was shorter than expected",
 			results().hits.size(), expMinWords);
+		AssertNumber.isGreaterOrEqualTo(
+			baseMessage+"\nTotal number of matches not as expected",
+			results().totalWords, expMinWords);
+		AssertNumber.isGreaterOrEqualTo(
+			baseMessage+"\nTotal number of matches was smaller than the lenght of the list of hits!",
+			results().totalWords, results().hits.size());
+
 		return this;
 	}
 

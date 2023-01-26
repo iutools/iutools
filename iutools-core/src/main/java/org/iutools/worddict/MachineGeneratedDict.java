@@ -711,6 +711,7 @@ public class MachineGeneratedDict {
 
 		results.hits = sortHits(results.hits);
 		adjustPartialWordInHits(results);
+		results.totalWords = Math.max(totalHits, results.hits.size());
 
 		return results;
 	}

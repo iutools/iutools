@@ -396,7 +396,7 @@ public class SpellCheckerTest {
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(1)
+//			.onlyCaseNums(5)
 //			.onlyCasesWithDescr("Level 3 - Correct leading")
 			.run();
 	}
