@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.iutools.config.IUConfig;
 import org.iutools.text.IUWord;
 import org.iutools.text.WordException;
+import org.iutools.text.segmentation.IUTokenizer;
+import org.iutools.text.segmentation.Token;
 import org.iutools.utilities.StopWatch;
 import org.iutools.utilities.StopWatchException;
 
@@ -36,6 +38,7 @@ public class Glossary {
 
 	public Set<String> allLanguages = new HashSet<>();
 
+	private static IUTokenizer tokenizer = new IUTokenizer();
 
 	public Glossary() throws GlossaryException {
 		return;
@@ -138,13 +141,15 @@ public class Glossary {
 		Pair<String,String> parsed = null;
 		String[] components = termDescr.split(":");
 		if (components.length > 2) {
-			throw new GlossaryException("Invalid term description: "+termDescr);
+			String lang = components[0];
+			String term = String.join("", Arrays.copyOfRange(components, 1, components.length));
+			components = new String[] {lang, term};
+		}
+
+		if (components.length == 2) {
+			parsed = Pair.of(components[0], components[1]);
 		} else {
-			if (components.length == 2) {
-				parsed = Pair.of(components[0], components[1]);
-			} else {
-				parsed = Pair.of(null, termDescr);
-			}
+			parsed = Pair.of(null, termDescr);
 		}
 		return parsed;
 	}
@@ -172,36 +177,94 @@ public class Glossary {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Read glossary entry: "+newEntry);
 		}
-		for (String lang: newEntry.availableLanguages()) {
-			allLanguages.add(lang);
-			for (String term: newEntry.termsInLang(lang)) {
-				String key = null;
-				try {
-					key = keyFor(lang, term);
-				} catch (GlossaryException e) {
-					throw new GlossaryException(e);
+
+		if (isInAtLeastOneSupportedDialect(newEntry) && isValid_TEMPORARY(newEntry)) {
+			for (String lang: newEntry.availableLanguages()) {
+				allLanguages.add(lang);
+				for (String term: newEntry.termsInLang(lang)) {
+					String key = null;
+					try {
+						key = keyFor(lang, term);
+					} catch (GlossaryException e) {
+						throw new GlossaryException(e);
+					}
+					if (!term2entries.containsKey(key)) {
+						term2entries.put(key, new ArrayList<GlossaryEntry>());
+					}
+					List<GlossaryEntry> existingEntries = term2entries.get(key);
+					existingEntries.add(newEntry);
 				}
-				if (!term2entries.containsKey(key)) {
-					term2entries.put(key, new ArrayList<GlossaryEntry>());
-				}
-				List<GlossaryEntry> existingEntries = term2entries.get(key);
-				existingEntries.add(newEntry);
 			}
 		}
 	}
 
-	private String keyFor(String lang, String term) throws GlossaryException {
+	private boolean isInAtLeastOneSupportedDialect(GlossaryEntry newEntry) {
+		boolean answer = false;
+		String [] availableDialects = newEntry.dialects;
+		if (availableDialects == null) {
+			answer = true;
+		} else {
+			for (String aDialect: availableDialects) {
+				if (!aDialect.toLowerCase().matches("(inuinnaqtun|nunatsiavummiutut|nattilingmiutut|paallirmiutut)")) {
+					answer = true;
+					break;
+				}
+			}
+		}
+		return answer;
+	}
+
+	private boolean isValid_TEMPORARY(GlossaryEntry newEntry) {
+		Boolean valid = null;
+
+		if (valid == null) {
+			for (String lang : newEntry.availableLanguages()) {
+				allLanguages.add(lang);
+				for (String term : newEntry.termsInLang(lang)) {
+					// Some glossaries provided by Stephane (Dorais, NAC Kadlun-Jone & Angalik) may contain some chars that
+					// are not dealt with correctly by the Transcoder (ex: y, _).
+					// For now, just ignore those words, until we get more info from Stephane about that char.
+					//
+					if (term.matches(".*[_].*")) {
+						valid = false;
+						break;
+					}
+				}
+			}
+		}
+
+		if (valid == null) {
+			valid = true;
+		}
+		return valid;
+	}
+
+	protected static String keyFor(String lang, String term) throws GlossaryException {
 		String key = null;
 		if (!lang.equals("iu")) {
 			key = lang+":"+term.toLowerCase();
 		} else {
-			try {
-				String roman_word = new IUWord(term).inRoman();
-				key = lang+":"+roman_word;
-			} catch (WordException e) {
-				throw new GlossaryException(e);
-			}
+			key = keyForIUTerm(term);
 		}
+		return key;
+	}
+
+	private static String keyForIUTerm(String term) throws GlossaryException {
+		String key = null;
+		try {
+			key = "";
+			tokenizer.tokenize(term);
+			for (Token token: tokenizer.getAllTokens()) {
+				if (token.isWord) {
+					key += new IUWord(token.text).inRoman();
+				} else {
+					key += token.text;
+				}
+			}
+		} catch (WordException e) {
+			throw new GlossaryException(e);
+		}
+		key = "iu:"+key;
 		return key;
 	}
 
