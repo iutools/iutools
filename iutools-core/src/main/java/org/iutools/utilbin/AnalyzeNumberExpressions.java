@@ -73,7 +73,7 @@ public class AnalyzeNumberExpressions {
 		
 		numericTermAnalyzer.setNgramStats();
 		
-		String dataPath = IUConfig.getIUDataPath();
+		String dataPath = IUConfig.dataFilePath();
 		System.out.println("dataPath= "+dataPath);
 		FileWriter saveFileWriter = new FileWriter(dataPath+"/data/"+"numericTermsCorpus.json");
 		new Gson().toJson(numericTermAnalyzer, saveFileWriter);

@@ -363,6 +363,13 @@ public class CLI {
 			;
 		mainCmd.addSubCommand(loadTranslationMemory);
 
+		// Load a translation memory into ElasticSearch
+		SubCommand generateTMEvalData =
+			new CmdGenerateTMEvaluationData("generate_tm_eval_data")
+			;
+		mainCmd.addSubCommand(generateTMEvalData);
+
+
 		// Describe a corpus
 		SubCommand describeCorpus =
 				new CmdDescribeCorpus("describe_corpus")

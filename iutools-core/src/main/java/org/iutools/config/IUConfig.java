@@ -29,11 +29,11 @@ public class IUConfig extends Config {
 		return multiIndex;
 	}
 
-	public static String getIUDataPath() throws ConfigException {
-		return getIUDataPath(null);
+	public static String dataFilePath() throws ConfigException {
+		return dataFilePath(null);
 	}
 
-	public static String getIUDataPath(String file) throws ConfigException {
+	public static String dataFilePath(String file) throws ConfigException {
 		String iuDataPath = getConfigProperty("org.iutools.datapath", true);
 		
 		if (file != null) {
@@ -166,7 +166,7 @@ public class IUConfig extends Config {
 			relativePath = "";
 		}
 		relativePath = "/data/glossaries/"+relativePath;
-		Path fpath = Paths.get(getIUDataPath(relativePath));
+		Path fpath = Paths.get(dataFilePath(relativePath));
 		return fpath;
 	}
 
@@ -182,7 +182,7 @@ public class IUConfig extends Config {
 			relativePath = "";
 		}
 		relativePath = "/workspace/"+relativePath;
-		Path fpath = Paths.get(getIUDataPath(relativePath));
+		Path fpath = Paths.get(dataFilePath(relativePath));
 		if (createIfNotExists && fpath != null && !fpath.toFile().exists()) {
 			try {
 				Files.createDirectories(fpath.getParent());

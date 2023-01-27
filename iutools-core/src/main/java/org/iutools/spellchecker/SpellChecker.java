@@ -272,7 +272,7 @@ public class SpellChecker {
 	
 	protected void __processCorpus() throws ConfigException, FileNotFoundException {
 		// Ideally, these should be compiled along with allWords and ngramsStats during corpus compilation
-		String dataPath = IUConfig.getIUDataPath();
+		String dataPath = IUConfig.dataFilePath();
 		FileReader fr = new FileReader(dataPath+"/data/numericTermsCorpus.json");
 		AnalyzeNumberExpressions numberExpressionsAnalysis = new Gson().fromJson(fr, AnalyzeNumberExpressions.class);
 

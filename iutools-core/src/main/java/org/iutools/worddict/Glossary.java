@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Human-generated glossary of en-iu terms
  *
@@ -39,6 +41,8 @@ public class Glossary {
 	public Set<String> allLanguages = new HashSet<>();
 
 	private static IUTokenizer tokenizer = new IUTokenizer();
+
+	static Pattern pattParseTermDescr = Pattern.compile("^((iu|en|fr):)(.*)$");
 
 	public Glossary() throws GlossaryException {
 		return;
@@ -138,24 +142,23 @@ public class Glossary {
 	}
 
 	public static Pair<String,String> parseTermDescription(String termDescr) throws GlossaryException {
-		Pair<String,String> parsed = null;
-		String[] components = termDescr.split(":");
-		if (components.length > 2) {
-			String lang = components[0];
-			String term = String.join("", Arrays.copyOfRange(components, 1, components.length));
-			components = new String[] {lang, term};
+		String lang = null;
+		String term = null;
+		Matcher matcher = pattParseTermDescr.matcher(termDescr);
+		if (!matcher.find()) {
+			term = termDescr;
+		} else {
+			if (!matcher.group(2).isEmpty()) {
+				lang = matcher.group(2);
+			}
+			term = matcher.group(3);
 		}
 
-		if (components.length == 2) {
-			parsed = Pair.of(components[0], components[1]);
-		} else {
-			parsed = Pair.of(null, termDescr);
-		}
-		return parsed;
+		return Pair.of(lang, term);
 	}
 
 
-	Glossary loadFile(File file) throws GlossaryException {
+	public Glossary loadFile(File file) throws GlossaryException {
 		try {
 			ObjectStreamReader reader = new ObjectStreamReader(file);
 			GlossaryEntry entry = null;
@@ -205,12 +208,16 @@ public class Glossary {
 			answer = true;
 		} else {
 			for (String aDialect: availableDialects) {
-				if (!aDialect.toLowerCase().matches("(inuinnaqtun|nunatsiavummiutut|nattilingmiutut|paallirmiutut)")) {
+				aDialect = aDialect.toLowerCase();
+//				System.out.println("--** isInAtLeastOneSupportedDialect: aDialect="+aDialect);
+				if (!aDialect.matches("(east greenland|inuinnaqtun|labrador|north greenland|nunatsiavummiutut|nattilingmiutut|paallirmiutut|west greenland)")) {
 					answer = true;
 					break;
 				}
 			}
 		}
+//		System.out.println("--** isInAtLeastOneSupportedDialect: returning answer="+answer);
+
 		return answer;
 	}
 
@@ -278,7 +285,45 @@ public class Glossary {
 		return entries;
 	}
 
-	public Set<String> allTerms() {
-		return term2entries.keySet();
+	public Set<String> allTermDescriptions() throws GlossaryException {
+		return allTermDescriptions((String)null);
+	}
+
+	public Set<String> allTermDescriptions(String inLang) throws GlossaryException {
+		Set<String> terms = new HashSet<>();
+		for (String termWithLang: term2entries.keySet()) {
+			Boolean add = true;
+			if (inLang != null) {
+				try {
+					Pair<String, String> parsed = parseTermDescription(termWithLang);
+					if (parsed == null || !parsed.getLeft().equals(inLang)) {
+						add = false;
+					}
+				} catch (GlossaryException e) {
+					throw new GlossaryException(e);
+				}
+			}
+			if (add) {
+				terms.add(termWithLang);
+			}
+		}
+		return terms;
+	}
+
+	public Set<String> allTerms() throws GlossaryException {
+		return allTerms((String)null);
+
+	}
+
+	public Set<String> allTerms(String lang) throws GlossaryException {
+		Set<String> terms = new HashSet<>();
+		for (String termDescr: allTermDescriptions(lang)) {
+			Pair<String,String> parsed = parseTermDescription(termDescr);
+			String term = parsed.getRight();
+			if (term != null && !term.isEmpty()) {
+				terms.add(term);
+			}
+		}
+		return terms;
 	}
 }

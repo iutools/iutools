@@ -33,8 +33,8 @@ public class ProcessQuery {
 	
 	public ProcessQuery() throws ConfigException {
 		Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.constructor");
-		inuktutWordIndexFile = new File(IUConfig.getIUDataPath()+"/"+inuktutWordIndexFilePath);
-		alignedSentencesFile = new File(IUConfig.getIUDataPath()+"/"+alignedSentencesFilePath);
+		inuktutWordIndexFile = new File(IUConfig.dataFilePath()+"/"+inuktutWordIndexFilePath);
+		alignedSentencesFile = new File(IUConfig.dataFilePath()+"/"+alignedSentencesFilePath);
 		tLogger.trace("inuktutWordIndexFile="+inuktutWordIndexFile);;
 	}
 	

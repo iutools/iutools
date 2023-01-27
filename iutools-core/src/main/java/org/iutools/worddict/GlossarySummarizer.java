@@ -14,7 +14,7 @@ public class GlossarySummarizer {
     public Summary summarize(Glossary _gloss) throws GlossaryException {
         Summary summary = new Summary();
         gloss = _gloss;
-        Set<String> terms = gloss.allTerms();
+        Set<String> terms = gloss.allTermDescriptions();
         for (String termDescr: terms) {
             onNewTermDescription(termDescr, summary);
         }
@@ -31,6 +31,7 @@ public class GlossarySummarizer {
                 String[] dialects = entry.dialects;
                 if (dialects != null) {
                     for (String dialect : dialects) {
+//                        System.out.println("--** onNewTermDescription: dialect="+dialect);
                         summary.incrementDialectFrequency(dialect);
                     }
                 }

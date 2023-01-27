@@ -48,7 +48,7 @@ public class CorpusReader_DirectoryTest
 	@Test
 	public void test__getContents() throws Exception {
 		CorpusReader corpusReader = new CorpusReader_Directory();
-        String corpusDir = IUConfig.getIUDataPath()+"/src/test/CorpusReaderDirectory";
+        String corpusDir = IUConfig.dataFilePath()+"/src/test/CorpusReaderDirectory";
 		Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) ((CorpusReader_Directory) corpusReader).getFiles(corpusDir);
 		String expected = "inuit tuktumik takulaaqtut sanallugu";
 		while (files.hasNext()) {

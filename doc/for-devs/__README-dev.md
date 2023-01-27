@@ -170,4 +170,56 @@ by Portage and stored in the the various .tm.json files.
 Below is a producedure which you can use to generate a test set that can be used to evaluate the peformance of a new 
 version of the Portage aligner, in the context of IUTools.
 
-_DETAILS TO COME__
+### Overview of the workflow
+
+You can evaluate Portage word alignments in two ways:
+
+When trying to improve the Portage word alignments for IUTools, the workflow is as follows.
+- _Step 1: Try various improvements, and evaluate them in a _Standalone_ fashion, i.e. in a way that does not worry about 
+  how the alignments will be used in the context of IUTools
+- Step 2: When the results of the _Standalone_ evaluation indicates that there has been significant improvements, 
+  carry out a _Functional_ evaluation which takes into account how the alignemtns will be used in the context of IUTools.
+- Go back to Step 1.
+
+Sections below provide more details on how to carry out _Standalone_ versus _Functional_ evaluations
+
+### Standalone Evaluation
+
+The directory
+
+    iutools-data/data/translation-memories/testdata
+
+contains two files that can be used to carry out _Standalone Evaluation_ of the word alignemnts.
+
+- _tmCases.json:_ A list of IU words along with known EN translations. These cases were extracted from the glossaries 
+  (i.e. _gloss.json_ files). We only kept IU terms which:
+  - Consist of a single word
+  - Exist in at least one of the dialects supported by IUTools
+  - Have at least one known EN equivalent.
+
+- _sentencePairs.json:_ A list of IU-EN sentence pairs extracted from the NRC-Nunavut-Hansard. These are all the pairs 
+  that contain at least one of the IU words listed in _tmCases.json_. 
+
+If you add or modify a glossary, you can regenerate the above data files using the CLI command _generate_tm_eval_data_.
+
+### Carrying out _Functional Evaluation_
+
+To carry out _Functional Evalaution_:
+- Create a word-alignment file for all sentences listed in the _sentencePairs.json:_ (in the _Standalone_ data). The 
+  format of this file is currently not documented, but you can see some examples in directory
+
+     _iutools-data/data/translation-memories/testdata_
+  - They are the files that start with _class=org.iutools.concordancer.Alignment_ES_
+
+Run the following JUnit TestCases:
+- TMEvaluationTest
+- DictEvaluationTest
+
+Before you run them however, you must modify them to point them to the new version of the test alignments files.
+
+Those tests will fail if the new alignments resulted in a significant change in performance (whether it be a failure or 
+an improvement). If some of the tests "fail" because there has been an improvement, then you should change the test's 
+expectations so it reflects this new and improved performance.
+
+Note that as of Jan 2023, the above tests only evaluate terms that appear in the Wikipedia glossary. Eventually, we should 
+modify them so the evaluate a sample of words taken from all glossaries.

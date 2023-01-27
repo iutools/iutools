@@ -111,7 +111,7 @@ public class SpellCheckerTest {
 	}
 
 	protected File largeESCorpusFile() throws Exception {
-		File corpusFile = new File(IUConfig.getIUDataPath("data/compiled-corpuses/HANSARD-1999-2002.ES.json"));
+		File corpusFile = new File(IUConfig.dataFilePath("data/compiled-corpuses/HANSARD-1999-2002.ES.json"));
 		return corpusFile;
 	}
 

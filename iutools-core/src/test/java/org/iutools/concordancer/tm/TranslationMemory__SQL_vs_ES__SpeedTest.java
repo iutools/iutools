@@ -32,7 +32,7 @@ public class TranslationMemory__SQL_vs_ES__SpeedTest {
 		if (enWords == null) {
 			enWords = new ArrayList<String>();
 			iuWords = new ArrayList<String>();
-			String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json");
+			String glossaryPath = IUConfig.dataFilePath("data/glossaries/wpGlossary.gloss.json");
 			ObjectStreamReader reader =
 				new ObjectStreamReader(new File(glossaryPath));
 			int entryNum = 0;

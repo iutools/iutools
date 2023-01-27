@@ -43,12 +43,12 @@ public class CompiledCorpusRegistry {
 				registerCorpus(
 					"hansard-1999-2002",
 					new File(
-						IUConfig.getIUDataPath(
+						IUConfig.dataFilePath(
 							"data/compiled-corpora/HANSARD-1999-2002.json")));
 				registerCorpus(
 					"nrc-hansard+gov_nu_ca",
 					new File(
-						IUConfig.getIUDataPath(
+						IUConfig.dataFilePath(
 							"data/compiled-corpora/nrc-hansard+gov_nu_ca.json")));
 
 			} catch (ConfigException | CompiledCorpusRegistryException e) {
@@ -195,7 +195,7 @@ public class CompiledCorpusRegistry {
 		
 		String corpusesPath;
 		try {
-			corpusesPath = IUConfig.getIUDataPath("data/compiled-corpuses");
+			corpusesPath = IUConfig.dataFilePath("data/compiled-corpuses");
 		} catch (ConfigException e) {
 			throw new CompiledCorpusRegistryException(e);
 		}

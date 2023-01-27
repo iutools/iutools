@@ -36,7 +36,7 @@ public class DELETEME_CompileWordsFromTM {
 
 	private void compileTMWords() throws Exception {
 		tmFile = new File(
-			IUConfig.getIUDataPath("data/translation-memories/nrc-nunavut-hansard.tm.json"));
+			IUConfig.dataFilePath("data/translation-memories/nrc-nunavut-hansard.tm.json"));
 
 		int totalAlignments = countAlignments();
 		ProgressMonitor_Terminal progress =

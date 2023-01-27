@@ -24,7 +24,7 @@ public class SpellGoldStandard_WebSampleSanityCheckTest {
         // gold standard
         boolean showDetails = true;
 
-        File gsDir = new File(IUConfig.getIUDataPath("data/NunavutWebSample-2020-07"));
+        File gsDir = new File(IUConfig.dataFilePath("data/NunavutWebSample-2020-07"));
 
         SpellGoldStandard gs = SpellGoldStandardReader.read(gsDir);
 

@@ -27,7 +27,7 @@ public class CmdLoadTranslationMemory extends ConsoleCommand {
 		tmDataFile = getDataFile(false);
 		fileRegex = getFileRegexp();
 		if (tmFilesDir == null) {
-			tmFilesDir = new File(IUConfig.getIUDataPath("data/translation-memories/"));
+			tmFilesDir = new File(IUConfig.dataFilePath("data/translation-memories/"));
 		}
 
 		UserIO userIO = getUserIO();

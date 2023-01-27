@@ -42,12 +42,12 @@ public class GlossarySummarizerTest {
     public void test__GlossarySummarizer__HappyPath() throws Exception {
         Glossary gloss = loadAllGlossFiles();
         GlossarySummarizer.Summary summary = new GlossarySummarizer().summarize(gloss);
-        Assertions.assertEquals(53232, summary.totalTerms(),
+        Assertions.assertEquals(52565, summary.totalTerms(),
                 "Total number of entries not as expected");
         AssertSet.assertEquals("List of languages not as expected", new String[]{"en", "fr", "iu"}, summary.allLanguages());
 
         for (Pair<String, Long> expTotalTerms :
-            new Pair[]{Pair.of("en", new Long(16955)), Pair.of("iu", new Long(36128)), Pair.of("fr", new Long(149))}) {
+            new Pair[]{Pair.of("en", new Long(16616)), Pair.of("iu", new Long(35800)), Pair.of("fr", new Long(149))}) {
             String lang = expTotalTerms.getLeft();
             Long expTotal = expTotalTerms.getRight();
             Assertions.assertEquals(expTotal, summary.totalTerms4lang(lang),

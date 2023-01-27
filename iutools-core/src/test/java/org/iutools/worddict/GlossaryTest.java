@@ -5,6 +5,8 @@ import static ca.nrc.testing.RunOnCases.Case;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.RunOnCases;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -125,6 +127,44 @@ public class GlossaryTest {
 			AssertString.assertStringEquals("Bad key for", expKey, gotKey);
 		};
 		new RunOnCases(cases, runner)
+			.run();
+	}
+
+	@Test
+	public void test__parseTermDescription__VariousCases() throws Exception {
+		Case[] cases = new Case[] {
+			new Case("Single IU word with nothing special", "iu:inuksuk", "iu", "inuksuk"),
+			new Case("IU word with a hyphen", "iu:inuk-suk", "iu", "inuk-suk"),
+			new Case("Multi word IU term", "iu:inuk suk", "iu", "inuk suk"),
+
+			new Case("Single EN word with nothing special", "en:hello", "en", "hello"),
+			new Case("EN word with a hyphen", "en:hello-world", "en", "hello-world"),
+			new Case("Multi word EN term", "en:hello world", "en", "hello world"),
+
+			new Case("Just language, no term", "en:", "en", ""),
+			new Case("Term contains some colons (language specified)", "en:at 2:00pm", "en", "at 2:00pm"),
+				new Case("Term contains some colons (language NOT specified)", "at 2:00pm", null, "at 2:00pm"),
+		};
+
+		Consumer<Case> runner = (caze) -> {
+			String termWithDescr = (String)caze.data[0];
+			String expLang = (String)caze.data[1];
+			String expTerm = (String)caze.data[2];
+			Pair<String,String> gotParsed = null;
+			try {
+				gotParsed = Glossary.parseTermDescription(termWithDescr);
+			} catch (GlossaryException e) {
+				throw new RuntimeException(e);
+			}
+			Assertions.assertEquals(expLang, gotParsed.getLeft(),
+				"Language not parsed correctly");
+			System.out.println("after lang");
+			Assertions.assertEquals(expTerm, gotParsed.getRight(),
+				"Term not parsed correctly");
+			System.out.println("after term");
+		};
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(9)
 			.run();
 	}
 

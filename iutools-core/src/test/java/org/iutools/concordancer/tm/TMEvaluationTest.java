@@ -17,7 +17,7 @@ public class TMEvaluationTest {
 
 	static {
 		try {
-			wordAlignsPath = Paths.get(IUConfig.getIUDataPath("data/translation-memories/testdata/fastalign.NunavutHansard-unique.bpe-j-15000.lc.json"));
+			wordAlignsPath = Paths.get(IUConfig.dataFilePath("data/translation-memories/testdata/fastalign.NunavutHansard-unique.bpe-j-15000.lc.json"));
 		} catch (ConfigException e) {
 			throw new RuntimeException(e);
 		}
@@ -25,7 +25,7 @@ public class TMEvaluationTest {
 
 	@Test
 	public void test_evaluateOnWikipediaGlossary_first20() throws Exception {
-		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json");
+		String glossaryPath = IUConfig.dataFilePath("data/glossaries/wpGlossary.gloss.json");
 
 		int firstN = 20;
 		EvaluationResults results =
@@ -101,7 +101,7 @@ public class TMEvaluationTest {
 	@Test
 	public void test_evaluateOnWikipediaGlossary_ALL(TestInfo testInfo) throws Exception {
 		Path sentPairsFile = new TestDirs(testInfo).outputsFile("sentencePairs.json");
-		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json");
+		String glossaryPath = IUConfig.dataFilePath("data/glossaries/wpGlossary.gloss.json");
 		Integer firstN = null;
 		EvaluationResults results =
 			new TMEvaluator(sentPairsFile, wordAlignsPath)

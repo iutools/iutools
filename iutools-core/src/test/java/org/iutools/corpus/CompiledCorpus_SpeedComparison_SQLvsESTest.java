@@ -83,7 +83,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 	protected static Path glossaryPath = null;
 	static {
 		try {
-			glossaryPath = Paths.get(IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json"));
+			glossaryPath = Paths.get(IUConfig.dataFilePath("data/glossaries/wpGlossary.gloss.json"));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

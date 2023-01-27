@@ -96,7 +96,7 @@ public class TMEvaluator {
 		private static void readSynsDict() throws MachineGeneratedDictException {
 		String enSynsPath = null;
 		try {
-			enSynsPath = IUConfig.getIUDataPath("data/glossaries/en-synonyms.json");
+			enSynsPath = IUConfig.dataFilePath("data/glossaries/en-synonyms.json");
 			ObjectStreamReader reader = new ObjectStreamReader(new File(enSynsPath));
 			while (true) {
 				Synset synset = (Synset) reader.readObject();
@@ -647,7 +647,7 @@ public class TMEvaluator {
 			firstN = Integer.parseInt(args[1]);
 		}
 
-		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json");
+		String glossaryPath = IUConfig.dataFilePath("data/glossaries/wpGlossary.gloss.json");
 		Path sentPairsFile = null;
 		for (File anAlignmentsFile: alignmentFiles) {
 			System.out.println("\n\n===============================================");

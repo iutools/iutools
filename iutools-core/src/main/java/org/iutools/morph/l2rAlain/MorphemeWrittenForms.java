@@ -111,7 +111,7 @@ public class MorphemeWrittenForms {
 
 		String fileRelpath = "data/linguistic_data/morphemes_surface_forms.json";
 		try {
-			filePath = Paths.get(IUConfig.getIUDataPath(fileRelpath));
+			filePath = Paths.get(IUConfig.dataFilePath(fileRelpath));
 		} catch (ConfigException e) {
 			throw new MorphologicalAnalyzerException(
 				"Could not get surface forms data file "+fileRelpath,  e);
