@@ -187,6 +187,7 @@ public abstract class Roman {
 		  word = word.toLowerCase();
         for (int i=0; i<word.length(); i++) {
         	  if ( inuktitutCharacters.indexOf(word.charAt(i)) == -1 ) {
+                  logger.trace("Character "+word.charAt(i)+" is not a ROMAN IU char (word="+word+")");
 				  answer = false;
 				  break;
 			  }

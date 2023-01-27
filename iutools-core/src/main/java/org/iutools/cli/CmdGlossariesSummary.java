@@ -1,6 +1,8 @@
 package org.iutools.cli;
 
 import ca.nrc.ui.commandline.CommandLineException;
+import org.iutools.worddict.Glossary;
+import org.iutools.worddict.GlossarySummarizer;
 
 public class CmdGlossariesSummary extends ConsoleCommand {
 
@@ -15,6 +17,28 @@ public class CmdGlossariesSummary extends ConsoleCommand {
 
     @Override
     public void execute() throws Exception {
-        throw new RuntimeException("This command is not implemented yet.");
+        GlossarySummarizer summarizer = new GlossarySummarizer();
+        GlossarySummarizer.Summary summary = summarizer.summarize(Glossary.get());
+        echo("Glossary summary");
+        echo(1);
+        try {
+            echo("Total terms : "+summary.totalTerms());
+            echo("Total terms by language");
+            echo(1);
+            try {
+                for (String lang: summary.allLanguages()) {
+                    echo(lang+": "+summary.totalTerms4lang(lang));
+                }
+            } finally {
+                echo(-1);
+            }
+            String dialects = "None";
+            if (!summary.iuDialects().isEmpty()) {
+                dialects = String.join(", ", summary.iuDialects());
+            }
+            echo("Dialects: "+dialects);
+        } finally {
+            echo(-1);
+        }
     }
 }

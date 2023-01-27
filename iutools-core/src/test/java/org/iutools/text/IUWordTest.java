@@ -58,8 +58,13 @@ public class IUWordTest {
 				"juHaanaspuug")
 				.expectScript(Script.ROMAN)
 				.expectRoman("juHaanaspuug")
-				.expectSyllabic("ᔪᕺᓇᔅᐴᒡ"),
+				.expectSyllabic("ᔪᕼᐋᓇᔅᐴᒡ"),
 
+			new CaseIUWord("ROMAN word with ???",
+					"angaadjuvik")
+					.expectScript(Script.ROMAN)
+					.expectRoman("BLAH")
+					.expectSyllabic("BLAH"),
 		};
 		Consumer<Case> runner = (caseNoCast) -> {
 			CaseIUWord aCase = (CaseIUWord) caseNoCast;
@@ -94,7 +99,7 @@ public class IUWordTest {
 			}
 		};
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(8)
+			.onlyCaseNums(9)
 			.run();
 	}
 

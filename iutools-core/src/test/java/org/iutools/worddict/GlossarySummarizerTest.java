@@ -42,18 +42,23 @@ public class GlossarySummarizerTest {
     public void test__GlossarySummarizer__HappyPath() throws Exception {
         Glossary gloss = loadAllGlossFiles();
         GlossarySummarizer.Summary summary = new GlossarySummarizer().summarize(gloss);
-        Assertions.assertEquals(1822, summary.totalTerms(),
+        Assertions.assertEquals(53232, summary.totalTerms(),
                 "Total number of entries not as expected");
         AssertSet.assertEquals("List of languages not as expected", new String[]{"en", "fr", "iu"}, summary.allLanguages());
 
         for (Pair<String, Long> expTotalTerms :
-            new Pair[]{Pair.of("en", new Long(669)), Pair.of("iu", new Long(1004)), Pair.of("fr", new Long(149))}) {
+            new Pair[]{Pair.of("en", new Long(16955)), Pair.of("iu", new Long(36128)), Pair.of("fr", new Long(149))}) {
             String lang = expTotalTerms.getLeft();
             Long expTotal = expTotalTerms.getRight();
-            Assertions.assertEquals(summary.totalTerms4lang(lang), expTotal,
+            Assertions.assertEquals(expTotal, summary.totalTerms4lang(lang),
                     "Wrong number of terms for language "+lang);
         }
-        AssertSet.assertEquals("List of dialects not as expected", new String[0], summary.iuDialects());
+        String[] expDialects = new String[] {
+            "AIVILINGMIUTUT", "Back River (Central Arctic)(Calc) Summary", "Baffin", "Baffin Island", "East Greenland",
+            "Labrador", "NORTH-QIKIQTAALUK", "North Greenland", "Ungava Northern Quebec", "West Greenland",
+            "West Hudson's Bay"
+        };
+        AssertSet.assertEquals("List of dialects not as expected", expDialects, summary.iuDialects());
     }
 
     //////////////////////////////////////

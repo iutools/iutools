@@ -3,6 +3,7 @@ package org.iutools.worddict;
 import static ca.nrc.testing.RunOnCases.Case;
 
 import ca.nrc.testing.AssertObject;
+import ca.nrc.testing.AssertString;
 import ca.nrc.testing.RunOnCases;
 import org.junit.jupiter.api.Test;
 
@@ -96,6 +97,34 @@ public class GlossaryTest {
 
 		new RunOnCases(cases, runner)
 //			.onlyCaseNums(4)
+			.run();
+	}
+
+	@Test
+	public void test__keyFor__VariousCases() throws Exception {
+		Case[] cases = new Case[] {
+			new Case("Single IU word with nothing special", "inuksuk", "iu", "iu:inuksuk"),
+			new Case("IU word with a hyphen", "inuk-suk", "iu", "iu:inuk-suk"),
+			new Case("Multi word IU term", "inuk suk", "iu", "iu:inuk suk"),
+
+			new Case("Single EN word with nothing special", "hello", "en", "en:hello"),
+			new Case("EN word with a hyphen", "hello-world", "en", "en:hello-world"),
+			new Case("Multi word EN term", "hello world", "en", "en:hello world"),
+		};
+
+		Consumer<Case> runner = (caze) -> {
+			String term = (String)caze.data[0];
+			String lang = (String)caze.data[1];
+			String expKey = (String)caze.data[2];
+			String gotKey = null;
+			try {
+				gotKey = Glossary.keyFor(lang, term);
+			} catch (GlossaryException e) {
+				throw new RuntimeException(e);
+			}
+			AssertString.assertStringEquals("Bad key for", expKey, gotKey);
+		};
+		new RunOnCases(cases, runner)
 			.run();
 	}
 

@@ -451,7 +451,7 @@ public class CLI {
 
 		// Provide summary statistics on glossaries.
 	  	SubCommand glossSummary =
-			new CmdGlossLookup("glossary_summary")
+			new CmdGlossariesSummary("glossary_summary")
 			;
 		mainCmd.addSubCommand(glossSummary);
 
