@@ -84,7 +84,7 @@ Syllabic query
   - Translations include 'clams' and 'divers'
 
 English query - Single word
-- Do the steps described in the 'basic scenario' with English word 'housing', 
+- Do the steps described in the 'basic scenario' with English word 'development', 
   with the following 'specifics':
   - QUERY_WORD: 'development'
   - QUERY_LANGUAGE: Change it to English
@@ -216,8 +216,13 @@ Invalid IU word that DOES appear in the Hansard
   
 Very long word
 - Search for aanniaqarnanngittulirijikkunnik
+- Resize the word entry window so it's narrower than the title (word in roman/word in syllabic)
 - Make sure that the word and its Syllabics transcoding are properly displayed 
 and do not overlap with the text that is supposed to be below it
+
+Empty query
+- Try "" and "    " as the query word
+  - Make sure the systems prints an error message saying you need to enter a word 
 
 Change preferred script (INUTKTITUT query)
 - ROMAN-to-ROMAN

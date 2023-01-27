@@ -19,29 +19,37 @@ class WordDictController extends IUToolsController {
     }
 
     onSearch() {
-        var tracer = Debug.getTraceLogger("WordDictController.onSearch")
-        var inputs = this.acquireInputs();
-        tracer.trace("Searching inputs="+jsonStringifySafe(inputs));
-        if (!this.isDuplicateEvent("onSearch", inputs)) {
-            this.clearHits();
-            this.setBusy(true);
-            this.invokeDictionarySearchService(inputs,
-                this.searchSuccessCallback, this.searchFailureCallback)
+        var tracer = Debug.getTraceLogger("WordDictController.onSearch");
+        this.clearHits();
+        var inputs = this.acquireInputs(inputs);
+        if (inputs != null) {
+            tracer.trace("Searching inputs=" + jsonStringifySafe(inputs));
+            if (!this.isDuplicateEvent("onSearch", inputs)) {
+                this.clearHits();
+                this.setBusy(true);
+                this.invokeDictionarySearchService(inputs,
+                    this.searchSuccessCallback, this.searchFailureCallback)
+            }
         }
     }
 
     acquireInputs() {
+        var inputsJson = null;
         var query = this.queryWord();
-        var lang = this.queryLang();
-        var inputs =
-            {
-                "word": query,
-                "lang": lang,
-                "exactWordLookup": false,
-                "iuAlphabet": new SettingsController().iuAlphabet(),
-            };
+        if (query == null || 0 == query.trim().length) {
+            this.error("You must enter a word");
+        } else {
+            var lang = this.queryLang();
+            var inputs =
+                {
+                    "word": query,
+                    "lang": lang,
+                    "exactWordLookup": false,
+                    "iuAlphabet": new SettingsController().iuAlphabet(),
+                };
+            inputsJson = jsonStringifySafe(inputs);
+        }
 
-        var inputsJson = jsonStringifySafe(inputs);
         return inputsJson;
     }
 
