@@ -18,6 +18,8 @@ public class TMEvaluationCase {
      */
     public String iuTerm_syll = null;
 
+    public String[] relatedTerms = new String[0];
+
     /**
      * Known EN equivalents for the IU word.
      */

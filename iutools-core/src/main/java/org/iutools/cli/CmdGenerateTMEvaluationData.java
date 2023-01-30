@@ -15,6 +15,8 @@ import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphRelativesFinderException;
 import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.script.TransCoder;
+import org.iutools.spellchecker.SpellChecker;
+import org.iutools.spellchecker.SpellingCorrection;
 import org.iutools.text.IUWord;
 import org.iutools.text.WordException;
 import org.iutools.worddict.Glossary;
@@ -40,6 +42,16 @@ public class CmdGenerateTMEvaluationData extends ConsoleCommand {
     MorphRelativesFinder relativesFinder = null;
 
     Set<String> alreadySeenAlignments = new HashSet<>();
+
+    private SpellChecker spellChecker;
+    {
+        try {
+            spellChecker = new SpellChecker().setCheckLevel(1);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public CmdGenerateTMEvaluationData(String name) throws CommandLineException {
         super(name);
         try {
@@ -78,7 +90,7 @@ public class CmdGenerateTMEvaluationData extends ConsoleCommand {
 
     private void generateData(Glossary gloss) throws Exception {
         Set<IUWord> iuSingleWords = allIUWords(gloss);
-        generateTermsData(iuSingleWords, gloss);
+        iuSingleWords = generateTermsData(iuSingleWords, gloss);
         generateSentences(iuSingleWords);
     }
 
@@ -103,20 +115,31 @@ public class CmdGenerateTMEvaluationData extends ConsoleCommand {
         return words;
     }
 
-    private void generateTermsData(Set<IUWord> iuWords, Glossary gloss) throws Exception {
+    private Set<IUWord> generateTermsData(Set<IUWord> iuWords, Glossary gloss) throws Exception {
         String mess = "Generating data for IU terms";
         echo(mess);
         ProgressMonitor_Terminal progress =
             new ProgressMonitor_Terminal(iuWords.size(), mess, 30);
+        Set<IUWord> relatedWords = new HashSet<>();
         for (IUWord word : iuWords) {
 //            System.out.println("  Generating data for term="+word);
-            writeTMCase(word, gloss);
+            TMEvaluationCase tmCase = writeTMCase(word, gloss);
+            for (String aRelatedWord: tmCase.relatedTerms) {
+                relatedWords.add(new IUWord(aRelatedWord));
+            }
             progress.stepCompleted();
         }
 
+        // Expand the list of words with all their related words.
+        // This is because when the MachineGeneratedDict is unable to find an occurence of the input
+        // word in the Hansard, it will look for occurences of related words.
+        // So to evaluate it, we will need the sentences for the input words as well as their related words.
+        iuWords.addAll(relatedWords);
+
+        return iuWords;
     }
 
-    private void writeTMCase(IUWord word, Glossary gloss) throws Exception {
+    private TMEvaluationCase writeTMCase(IUWord word, Glossary gloss) throws Exception {
         String term = word.inRoman();
         TMEvaluationCase newCase = new TMEvaluationCase(word);
 //                System.out.println("--** CmdGenerateTMEvaluationData.execute: term="+term);
@@ -129,8 +152,16 @@ public class CmdGenerateTMEvaluationData extends ConsoleCommand {
                 .addEnEquilvalents(anEntry.termsInLang("en"))
             ;
         }
+
+//        newCase.relatedTerms = relatedTerms(term);
+
+        newCase.relatedTerms = relatedTerms(term);
+
         writeCase(newCase);
+
+        return newCase;
     }
+
 
     private void generateSentences(Set<IUWord> iuWords) throws Exception {
         Pattern patt = allTermsPattern(iuWords);
@@ -228,14 +259,16 @@ public class CmdGenerateTMEvaluationData extends ConsoleCommand {
         return md5Hex;
     }
 
-    private String[] variantsForTerm(String term) throws Exception {
+    private String[] relatedTerms(String term) throws Exception {
+        SpellingCorrection correctiion = spellChecker.correctWord(term, 1);
+        term = correctiion.bestSuggestionSoFar(false);
         MorphologicalRelative[] relatives = relativesFinder.findRelatives(term);
-        String[] variants = new String[relatives.length+1];
-        variants[0] = term;
+        String[] related = new String[relatives.length+1];
+        related[0] = term;
         for (int ii=0; ii < relatives.length; ii++) {
-            variants[ii+1] = relatives[ii].getWord();
+            related[ii+1] = relatives[ii].getWord();
         }
-        return variants;
+        return related;
     }
 
 //    private void generateTermCase(String term, Glossary gloss) throws Exception {
