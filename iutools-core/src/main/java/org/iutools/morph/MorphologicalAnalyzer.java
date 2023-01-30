@@ -19,7 +19,12 @@ import ca.nrc.debug.Debug;
 import ca.nrc.string.StringUtils;
 
 public abstract class MorphologicalAnalyzer implements AutoCloseable {
-	
+
+	/**
+	 * If non-null, stop after you have found that number of decompositions.
+	 */
+	protected Integer _stopAfterNDecomps = null;
+
 	/**
 	 * Strategy used to monitor execution of the analyzer and timing it out 
 	 * after a set time.
@@ -50,6 +55,12 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
     public void setDecomposeCompositeRoot(boolean value) {
 		decomposeCompositeRoot = value;
 	}
+
+	public MorphologicalAnalyzer stopAfterN(int maxDecomps) {
+		_stopAfterNDecomps = maxDecomps;
+		return this;
+	}
+
     
     public void close() throws Exception {
     	System.out.println("--** MorphologicalAnalyzer.close: INVOKED");
@@ -327,7 +338,7 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
     	return this;
     }
     
-    public MorphologicalAnalyzer disactivateTimeout() {
+    public MorphologicalAnalyzer deactivateTimeout() {
     	timeoutActive = false;
     	return this;
     }

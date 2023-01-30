@@ -1,8 +1,16 @@
 package org.iutools.morph;
 
+import ca.nrc.testing.AssertNumber;
+import ca.nrc.testing.AssertObject;
+import org.iutools.utilities.StopWatch;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public abstract class MorphologicalAnalyzerTest {
@@ -26,7 +34,7 @@ public abstract class MorphologicalAnalyzerTest {
 		analyzer.setTimeout(15000); // in milliseconds
 
 		// By default, the timing out is active; it can be disactivated and reactivated
-		analyzer.disactivateTimeout();
+		analyzer.deactivateTimeout();
 		analyzer.activateTimeout();
 		
 		// The purpose of the analyzer is to decompose an inuktitut word into its morphemes
@@ -37,12 +45,75 @@ public abstract class MorphologicalAnalyzerTest {
 			// This happens if the decomposer timed out before it could complete
 			// the analysis.
 		}
+
+		// If you don't care to have all the possible decompositions, you can provide the
+		// analyzer with a maximum number of decomps. In partiular, you can tell it to stop
+		// after it finds the very first decomp
+		//
+		analyzer.stopAfterN(1);
 	}
 
 	////////////////////////////////////
 	// VERIFICATION TESTS
 	////////////////////////////////////
 
+
+	@Test
+	public void test__decomposeWord__withStopAfterN() throws Exception {
+		analyzer.deactivateTimeout();
+
+		String word = "iglumik";
+		Decomposition[] allAnalyses = analyzer.decomposeWord(word);
+		Assert.assertTrue("Should have returned more than one analysis", allAnalyses.length > 1);
+
+		analyzer.stopAfterN(1);
+		Decomposition[] singleAnalysis = analyzer.decomposeWord(word);
+		Assert.assertEquals("Should have returned just one analysis", 1, singleAnalysis.length);
+
+		AssertObject.assertDeepEquals("Single decomp should have been the first decomp of the full list ",
+			allAnalyses[0], singleAnalysis[0]);
+	}
+
+	/**
+	 * Compare speed of decomposition of first 100 words in the GoldStandard with stopAfterN=1 versus stopAfterN=null
+	 * It should be MUCH faster with stopAfterN=1;
+	 */
+	@Test
+	public void test__decomposeWord__withStopAfterN__IsMuchFaster() throws Exception {
+		analyzer.deactivateTimeout();
+
+		// Only use the first 100 words from the GS
+		final int firstNWords = 100;
+		MorphAnalGoldStandard_Hansard goldStandard = new MorphAnalGoldStandard_Hansard();
+		List<String> words = new ArrayList<>();
+		words.addAll(goldStandard.allWords());
+		Collections.sort(words);
+		words = words.subList(0, firstNWords);
+
+		// First, time how long it takes, asking for all decomps
+		StopWatch sw = new StopWatch().start();
+		for (String word: words) {
+			analyzer.decomposeWord(word);
+		}
+		Long secsAllDecomps = sw.totalTime(TimeUnit.SECONDS);
+
+		// Then, time how long it takes, asking only for one decomp
+		sw = new StopWatch().start();
+		analyzer.stopAfterN(1);
+		for (String word: words) {
+			analyzer.decomposeWord(word);
+		}
+		Long secsSingleDecomp = sw.totalTime(TimeUnit.SECONDS);
+
+		double gotSpeedup = 1.0 * secsAllDecomps / secsSingleDecomp;
+		System.out.println("Got speedup of: "+gotSpeedup);
+
+		final Integer expSpeedup = 4;
+
+		AssertNumber.isGreaterOrEqualTo(
+			"Asking for just one decomps should have been at least "+expSpeedup+"x times faster",
+				gotSpeedup, expSpeedup);
+	}
 	
 	@Test(expected=TimeoutException.class)
 	public void test__decomposeWord__timeout_2s() throws Exception  {
@@ -60,7 +131,7 @@ public abstract class MorphologicalAnalyzerTest {
 	@Test
 	public void test__decomposeWord__maligatigut() throws Exception  {
 		String word = "maligatigut";
-		analyzer.disactivateTimeout();
+		analyzer.deactivateTimeout();
 		Decomposition[] decs = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decs)
 			// No decomposition produced for this word
@@ -70,7 +141,7 @@ public abstract class MorphologicalAnalyzerTest {
 	@Test
 	public void test__decomposeWord__uqaqtiup() throws Exception  {
 		String word = "uqaqtiup";
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple)
@@ -82,7 +153,7 @@ public abstract class MorphologicalAnalyzerTest {
 	@Test
 	public void test__decomposeWord__sivuliuqtii() throws Exception  {
 		String word = "sivuliuqtii";
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple)
@@ -94,7 +165,7 @@ public abstract class MorphologicalAnalyzerTest {
 	@Test
 	public void test__decomposeWord__ammalu() throws Exception  {
 		String word = "ammalu";
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple)
 			.includesAtLeastOneOfDecomps(
@@ -114,7 +185,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__apiqsuqtaujuksaq() throws Exception  {
 		String word = "apiqsuqtaujuksaq";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 
 		// AD: This is how Benoit used to test this and it worked.
 //		DecompositionState[] decs = analyzer.decomposeWord(word);
@@ -136,7 +207,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__immagaa() throws Exception  {
 		String word = "immagaa";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple)
 			// No decomp for this word
@@ -147,7 +218,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__avunnga_Extensions() throws Exception  {
 		String word = "avunngaqtuq";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.includesAtLeastOneOfDecomps("{avunngaq:avunngaq/1v}{tuq:juq/1vn}");
@@ -170,7 +241,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__atuagaq() throws Exception  {
 		String word = "atuagaq";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.includesAtLeastOneOfDecomps(
@@ -192,7 +263,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__maligaliuqtinik() throws Exception  {
 		String word = "maligaliuqtinik";
 
-		analyzer.disactivateTimeout();
+		analyzer.deactivateTimeout();
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.includesAtLeastOneOfDecomps(
@@ -204,7 +275,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__sivungujuq() throws Exception  {
 		String word = "sivungujuq";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.includesAtLeastOneOfDecomps(
@@ -216,7 +287,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__with_extendedAnalysis() throws Exception  {
 		String word = "makpiga";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.atLeastOneDecompContains("ga:gaq/1vn");
@@ -226,7 +297,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__without_extendedAnalysis() throws Exception  {
 		String word = "makpiga";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word, false);
 		new AssertDecompositionList(decSimple, "word="+word+", NO extended analysis")
 			.includesAtLeastOneOfDecomps();
@@ -236,7 +307,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__noun_root_alone() throws Exception  {
 		String word = "angut";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.includesAtLeastOneOfDecomps("{angut:angut/1n}");
@@ -246,7 +317,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__inungmut() throws Exception  {
 		String word = "inungmut";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.includesAtLeastOneOfDecomps(
@@ -257,7 +328,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__siniktitsijuq() throws Exception  {
 		String word = "siniktitsijuq";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.includesAtLeastOneOfDecomps(
@@ -269,7 +340,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__siniktittijuq() throws Exception  {
 		String word = "siniktittijuq";
 
-		analyzer.disactivateTimeout();;
+		analyzer.deactivateTimeout();;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.includesAtLeastOneOfDecomps(
@@ -282,7 +353,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__pivalliatittinirmut() throws Exception {
 		String word = "pivalliatittinirmut";
 
-		analyzer.disactivateTimeout();
+		analyzer.deactivateTimeout();
 		;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word=" + word)
@@ -295,7 +366,7 @@ public abstract class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__siniktittiniq() throws Exception {
 		String word = "siniktittiniq";
 
-		analyzer.disactivateTimeout();
+		analyzer.deactivateTimeout();
 		;
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word=" + word)

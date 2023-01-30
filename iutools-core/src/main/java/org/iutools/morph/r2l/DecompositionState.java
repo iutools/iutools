@@ -532,7 +532,11 @@ public class DecompositionState extends Object implements Comparable<Decompositi
 		return simple;
 	}
 
-	//----------------------------------------------------------------------------------------------
+    public boolean isComplete() {
+		return (stem != null);
+    }
+
+    //----------------------------------------------------------------------------------------------
 	/*
      * {<forme de surface>:<signature du morphème>}{...}...
 	 */

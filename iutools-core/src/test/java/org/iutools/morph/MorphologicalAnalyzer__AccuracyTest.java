@@ -83,7 +83,7 @@ public abstract class MorphologicalAnalyzer__AccuracyTest {
 		System.out.println("This test can take a few minutes to complete.");
 
 		// Uncomment for debugging.
-		morphAnalyzer.disactivateTimeout();
+		morphAnalyzer.deactivateTimeout();
 
 		Calendar startCalendar = Calendar.getInstance();
 

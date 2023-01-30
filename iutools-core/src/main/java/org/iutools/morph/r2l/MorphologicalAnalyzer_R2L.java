@@ -42,6 +42,13 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
     		Caffeine.newBuilder().maximumSize(10000)
     		  .build();
 
+	protected Set<DecompositionState> _decompsSoFar = new HashSet<>();
+
+	/**
+	 * The MorphologicalAnalyzer will raise this exception when it has found enough analyses.
+	 */
+	public static class MorphologicalAnalyzerDoneException extends Exception {}
+
     public MorphologicalAnalyzer_R2L() {
     	super();
 		LinguisticData.getInstance();
@@ -59,7 +66,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 	 */
 	@Override
 	protected Decomposition[] doDecompose(String word, Boolean extendedAnalysis)
-			throws MorphologicalAnalyzerException, TimeoutException {
+		throws MorphologicalAnalyzerException, TimeoutException {
 		Logger logger = LogManager.getLogger("MorphoplogicalAnalyzer.doDecompose");
 		if (extendedAnalysis == null) {
 			extendedAnalysis = true;
@@ -81,7 +88,8 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 			// Eliminate decompositions that contain a sequence of suffixes
 			// that corresponds to a composite suffix, in order to keep only
 			// the decompositions with the composite suffix.
-			DecompositionState[] decStatesArray = DecompositionState.removeCombinedSuffixes(decStatesList.toArray(new DecompositionState[0]));
+			DecompositionState[] decStatesArray =
+				DecompositionState.removeCombinedSuffixes(decStatesList.toArray(new DecompositionState[0]));
 
 			// B. Eliminate duplicate decompositions.
 			decStatesArray = DecompositionState.removeMultiples(decStatesArray);
@@ -110,42 +118,46 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 	private List<DecompositionState> decomposeUntilTimeoutOrCompletion(
 		String wordToBeAnalyzed, Boolean extendedAnalysis, boolean decomposeCompositeRoot)
 			throws TimeoutException, MorphologicalAnalyzerException {
-
-		List<DecompositionState> decomps;
+		this._decompsSoFar = new HashSet<>();
 		List<DecompositionState> decompsSoFar = new ArrayList<DecompositionState>();
-		if (Syllabics.containsInuktitut(wordToBeAnalyzed))
-			wordToBeAnalyzed = Syllabics.transcodeToRoman(wordToBeAnalyzed);
-		wordToBeAnalyzed = Util.enMinuscule(wordToBeAnalyzed);
-		wordToBeAnalyzed = wordToBeAnalyzed.replaceAll("([iua])qk([iua])", "$1qq$2"); // to cope with error of transliteration
+		try {
+			List<DecompositionState> decomps;
+			if (Syllabics.containsInuktitut(wordToBeAnalyzed))
+				wordToBeAnalyzed = Syllabics.transcodeToRoman(wordToBeAnalyzed);
+			wordToBeAnalyzed = Util.enMinuscule(wordToBeAnalyzed);
+			wordToBeAnalyzed = wordToBeAnalyzed.replaceAll("([iua])qk([iua])", "$1qq$2"); // to cope with error of transliteration
 
-		if (wordToBeAnalyzed.charAt(wordToBeAnalyzed.length() - 1) != 'n') {
-			// if the word does not end in 'n', analyze it as is.
-			decomps = _decompose(wordToBeAnalyzed, decomposeCompositeRoot, decompsSoFar);
-			decompsSoFar.addAll(decomps);
-			// if the flag is set for treating possibly missing consonant, do it.
-			if ( extendedAnalysis && Roman.typeOfLetterLat(wordToBeAnalyzed.charAt(wordToBeAnalyzed.length() - 1)) == Roman.V) {
-				List<DecompositionState> otherDecomps = _decomposeForFinalConsonantPossiblyMissing(wordToBeAnalyzed, decomposeCompositeRoot);
-				decomps.addAll(otherDecomps);
-				decompsSoFar.addAll(otherDecomps);
+			if (wordToBeAnalyzed.charAt(wordToBeAnalyzed.length() - 1) != 'n') {
+				// if the word does not end in 'n', analyze it as is.
+				decomps = _decompose(wordToBeAnalyzed, decomposeCompositeRoot, decompsSoFar);
+				decompsSoFar.addAll(decomps);
+				// if the flag is set for treating possibly missing consonant, do it.
+				if (extendedAnalysis && Roman.typeOfLetterLat(wordToBeAnalyzed.charAt(wordToBeAnalyzed.length() - 1)) == Roman.V) {
+					List<DecompositionState> otherDecomps = _decomposeForFinalConsonantPossiblyMissing(wordToBeAnalyzed, decomposeCompositeRoot);
+					decomps.addAll(otherDecomps);
+					decompsSoFar.addAll(otherDecomps);
+				}
+			} else {
+				// replace 'n' by 't' and analyze.
+				decomps = _decomposeForFinalN(wordToBeAnalyzed, decomposeCompositeRoot);
+				decompsSoFar.addAll(decomps);
 			}
-		}
-		else {
-			// replace 'n' by 't' and analyze.
-			decomps = _decomposeForFinalN(wordToBeAnalyzed, decomposeCompositeRoot);
-			decompsSoFar.addAll(decomps);
+		} catch (MorphologicalAnalyzerDoneException e) {
+			// If this exception is raised, it just means we stopped at some point where we had found enough decomps
+			decompsSoFar.addAll(this._decompsSoFar);
 		}
 
 		return decompsSoFar;
 	}
 
 	private synchronized void cache(Decomposition[] decs, String word, boolean extendedAnalysis) {
-		String key = cacheKeyFor(word, extendedAnalysis);
+		String key = cacheKeyFor(word, _stopAfterNDecomps, extendedAnalysis);
 		decompsCache.put(key, decs);
 	}
 
 
 	private synchronized Decomposition[]  uncache(String word, boolean extendedAnalysis) {
-		String key = cacheKeyFor(word, extendedAnalysis);
+		String key = cacheKeyFor(word, _stopAfterNDecomps, extendedAnalysis);
 		Decomposition[] decomps = decompsCache.getIfPresent(key);
 		return decomps;
 	}
@@ -156,7 +168,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 	 * Analyze the word with its final 'n' replaced by 't'.
 	 */
 	private List<DecompositionState> _decomposeForFinalN(String aWord, boolean decomposeCompositeRoot)
-			throws TimeoutException, MorphologicalAnalyzerException {
+			throws TimeoutException, MorphologicalAnalyzerException, MorphologicalAnalyzerDoneException {
 
 		String wordWithNReplaced = aWord.substring(0, aWord.length() - 1) + "t";
 		List<DecompositionState> newDecomps = _decompose(wordWithNReplaced, decomposeCompositeRoot);
@@ -180,7 +192,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
      * Add '*' at the end of the word in place of a missing consonant and analyze the word.
      */
     private List<DecompositionState> _decomposeForFinalConsonantPossiblyMissing(
-    		String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphologicalAnalyzerException {
+    		String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphologicalAnalyzerException, MorphologicalAnalyzerDoneException {
     	stpw.check(
     		"_decomposeForFinalConsonantPossiblyMissing -- upon entry, word="+
     		aWord+", decomposeCompositeRoot="+decomposeCompositeRoot);
@@ -200,7 +212,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 	 */
 	private List<DecompositionState> _decompose(String word,
 															  boolean decomposeCompositeRoot, List<DecompositionState> decompsSoFar)
-			throws TimeoutException, MorphologicalAnalyzerException {
+			throws TimeoutException, MorphologicalAnalyzerException, MorphologicalAnalyzerDoneException {
 
 		Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
 		Graph.State state = Graph.initialState;
@@ -233,8 +245,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 	}
 
 	private List<DecompositionState> _decompose(String word,
-															  boolean decomposeCompositeRoot)
-			throws TimeoutException, MorphologicalAnalyzerException {
+  		boolean decomposeCompositeRoot) throws TimeoutException, MorphologicalAnalyzerException, MorphologicalAnalyzerDoneException {
 		return _decompose(word, decomposeCompositeRoot, null);
 	}
 
@@ -273,7 +284,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 			Graph.State[] states,
 			Conditions preConds,
 			String transitivity)
-	 		throws TimeoutException, MorphologicalAnalyzerException {
+			throws TimeoutException, MorphologicalAnalyzerException, MorphologicalAnalyzerDoneException {
 
     	Logger logger = LogManager.getLogger("MorphologicalAnalyzer_R2L.__decompose_simplified_term__");
     	stpw.check("__decompose_simplified_term__ -- Upon entry");
@@ -327,7 +338,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 			String simplifiedTerm,
 			String word,
 			Vector<AffixPartOfComposition> morphParts, State[] states,
-			Conditions preCond, String transitivity) throws TimeoutException, MorphologicalAnalyzerException {
+			Conditions preCond, String transitivity) throws TimeoutException, MorphologicalAnalyzerException, MorphologicalAnalyzerDoneException {
 
     	stpw.check("analyzeAsSequenceOfMorphemes -- Upon entry");
     	Logger logger = LogManager.getLogger("MorphologicalAnalyzer_R2L.analyzeAsSequenceOfMorphemes");
@@ -444,7 +455,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 		Vector<AffixPartOfComposition> morphParts,
 		String word,
 		boolean notResultingFromDialectalPhonologicalTransformation)
-	throws TimeoutException, MorphologicalAnalyzerException {
+			throws TimeoutException, MorphologicalAnalyzerException, MorphologicalAnalyzerDoneException {
 
 		Logger logger = LogManager.getLogger("MorphologicalAnalyzer_R2L.analyzeWithCandidateAffixes");
 		List<DecompositionState> completeAnalysis = new ArrayList<DecompositionState>();
@@ -551,9 +562,9 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
      */
     @SuppressWarnings("unchecked")
 	private Vector<DecompositionState> analyzeAsRoot(String term, String termOrig,
-																	 String word, Vector<AffixPartOfComposition> morphParts, Graph.State[] states,
-																	 Conditions preConds,
-																	 String transitivity) throws TimeoutException, MorphologicalAnalyzerException {
+		 String word, Vector<AffixPartOfComposition> morphParts, Graph.State[] states,
+		 Conditions preConds,
+		 String transitivity) throws TimeoutException, MorphologicalAnalyzerException, MorphologicalAnalyzerDoneException {
 
     	Logger logger = LogManager.getLogger("MorphologicalAnalyzer_R2L.analyzeAsRoot");
         Vector<DecompositionState> allAnalyses = new Vector<DecompositionState>();
@@ -656,8 +667,8 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
      * @throws TimeoutException
      */
 	private Vector<DecompositionState> checkRoots(Vector<Morpheme> lexs, String word, String termOrigICI,
-																 Vector<AffixPartOfComposition> morphParts, Graph.State[] states, Conditions preConds,
-																 String transitivity) throws TimeoutException, MorphologicalAnalyzerException {
+		Vector<AffixPartOfComposition> morphParts, Graph.State[] states, Conditions preConds,
+ 		String transitivity) throws TimeoutException, MorphologicalAnalyzerException, MorphologicalAnalyzerDoneException {
 
         Vector<DecompositionState> rootAnalyses = new Vector<DecompositionState>();
 
@@ -693,6 +704,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
                 DecompositionState res = new DecompositionState(word, new RootPartOfComposition(
                         termOrigICI, root, transitivity, null), morphParts
                         .toArray(new AffixPartOfComposition[] {}));
+                onNewDecompFound(res);
                 rootAnalyses.add(res);
             } else {
                 /*
@@ -711,6 +723,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
                             termOrigICI, root, transitivity, arc);
                     DecompositionState res = new DecompositionState(word, mr, morphParts
                             .toArray(new AffixPartOfComposition[] {}));
+                    onNewDecompFound(res);
                     rootAnalyses.add(res);
                 }
             }
@@ -938,26 +951,45 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 
 
 	public static void removeFromCache(String word) {
-		removeFromCache(word, null);
+		removeFromCache(word, null, null);
 	}
 
-	public static synchronized void removeFromCache(String word, Boolean extendedAnalyses) {
+	public static synchronized void removeFromCache(String word, Integer maxDecomps, Boolean extendedAnalyses) {
 		if (extendedAnalyses == null) {
 			extendedAnalyses = false;
 		}
 
-		String key = cacheKeyFor(word, extendedAnalyses);
+		String key = cacheKeyFor(word, maxDecomps, extendedAnalyses);
 
 		decompsCache.invalidate(key);
 	}
 
 
-	private static String cacheKeyFor(String word, boolean extendedAnalyses) {
+	private static String cacheKeyFor(String word, Integer maxDecomps, boolean extendedAnalyses) {
 		String key = word;
+		if (maxDecomps != null) {
+			key += "/max="+maxDecomps;
+		}
 		if (extendedAnalyses) {
 			key += "/extended";
 		}
 		return key;
 	}
 
+	/**
+	 * Add decompositions to the list of decomps found so far.
+	 */
+	private void onNewDecompFound(DecompositionState newDecomp) throws MorphologicalAnalyzerDoneException {
+		if (newDecomp.isComplete()) {
+			_decompsSoFar.add(newDecomp);
+		}
+		if (_stopAfterNDecomps != null && _decompsSoFar.size() >= _stopAfterNDecomps) {
+			// We are done.
+			// Throw a MorphologicalAnalyzerDoneException so we stop processing
+			// The exception will be caught at the level of doDecompose(), which will return
+			// the list of decomps found so far.
+			//
+			throw new MorphologicalAnalyzerDoneException();
+		}
+	}
 }

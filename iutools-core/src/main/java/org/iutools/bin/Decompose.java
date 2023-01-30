@@ -158,7 +158,7 @@ public class Decompose {
             LinguisticData.init(); // make sure the LinguisticData instance is null
             MorphologicalAnalyzer_R2L morphAnalyzer = new MorphologicalAnalyzer_R2L();
             morphAnalyzer.setDecomposeCompositeRoot(decomposeComposite);
-        	morphAnalyzer.disactivateTimeout();
+        	morphAnalyzer.deactivateTimeout();
 
 			decs = morphAnalyzer.decomposeWord(word,extendedAnalysis);
 			

@@ -7,7 +7,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.*;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.script.Syllabics;
@@ -38,7 +37,7 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 
 	@Override
 	public void disactivateTimeout() {
-		getAnalyzer().disactivateTimeout();
+		getAnalyzer().deactivateTimeout();
 	}
 
 	@Override
