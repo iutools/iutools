@@ -79,12 +79,12 @@ public class ElasticSearchDB {
 	private void defineIndexForDocType(DocType docType) throws GenericESException {
 		String indexName = docType.indexName(dbName);
 
-		URL url = null;
-		try {
-			url = new URL(ClientPool.baseURL()+indexName);
-		} catch (MalformedURLException e) {
-			throw new GenericESException(e);
-		}
+//		URL url = null;
+//		try {
+//			url = new URL(ClientPool.baseURL()+indexName);
+//		} catch (MalformedURLException e) {
+//			throw new GenericESException(e);
+//		}
 
 		JSONObject properties = new JSONObject();
 		for (String fldName: docType.fieldNames()) {
@@ -99,7 +99,7 @@ public class ElasticSearchDB {
 		RestHighLevelClient client = ClientPool.getRestHighLevelClient();
         IndicesClient indices = client.indices();
 
-        PutMappingRequest request = new PutMappingRequest("chatgpt_index")
+        PutMappingRequest request = new PutMappingRequest(indexName)
                 .source(mapping.toString(), XContentType.JSON);
 		try {
 			AcknowledgedResponse response =  indices.putMapping(request, RequestOptions.DEFAULT);

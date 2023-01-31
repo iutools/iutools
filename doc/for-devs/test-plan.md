@@ -221,7 +221,7 @@ Very long word
 and do not overlap with the text that is supposed to be below it
 
 Empty query
-- Try "" and "    " as the query word
+- Try an empty query word, and then a query word that is made up of just spaces
   - Make sure the systems prints an error message saying you need to enter a word 
 
 Change preferred script (INUTKTITUT query)
@@ -402,9 +402,11 @@ Spell check SYLLABIC -- Happy Path
       second one.
 
 Spell check text that contains some Inuktitut and English words
-- System should leave the English words alone, and those words should not crash 
-  the spell checker
-- The Inuktut words should be spellchecked as usual
+- Spell check "nunavvvut main content"
+- System should leave "content" alone because it recognizes it contains some non-iu chars
+- As of 2023-01-31, the system still thinks that "main" is an IU word (because all of its chars are valid 
+  IU-roman chars) and will underline it as incorrect.
+- System should underline "nunavvvut" as incorrect, as usual.
 
 Concurency testing and Interruption
 - When you hit _Spell Check_
