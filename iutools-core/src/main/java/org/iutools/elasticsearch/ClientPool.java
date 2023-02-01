@@ -159,7 +159,7 @@ public class ClientPool {
 		// we cleanup the clients index every time we ask for a new client
 		cleanupThreadClientIndex();
 		Long currThread = Thread.currentThread().getId();
-		if (!singleton().hasLiveClient4Thread(currThread)) {
+		if (!singleton().hasLiveRestHighLevelClient4Thread(currThread)) {
 			// We don't have a live client for the current thread.
 			// Initialize one and put its related resources in the various
 			// thread2* maps
@@ -172,12 +172,18 @@ public class ClientPool {
 		}
 
 		logger.trace("exiting");
-		return singleton().thread2restHighLevelClient.get(currThread);
+		RestHighLevelClient client = singleton().thread2restHighLevelClient.get(currThread);
+		return client;
 	}
 
 
 	private boolean hasLiveClient4Thread(Long thrID) {
-		boolean answer = (thread2esClient.containsKey(thrID) || thread2restHighLevelClient.containsKey(thrID));
+		boolean answer = thread2esClient.containsKey(thrID);
+		return answer;
+	}
+
+	private boolean hasLiveRestHighLevelClient4Thread(Long thrID) {
+		boolean answer = thread2restHighLevelClient.containsKey(thrID);
 		return answer;
 	}
 

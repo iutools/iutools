@@ -1,10 +1,12 @@
 package org.iutools.elasticsearch;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.IndicesClient;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 
 import org.json.JSONObject;
@@ -68,7 +70,9 @@ public class ElasticSearchDB {
 //	}
 
 	private void ensureIndicesAreDefined() throws GenericESException {
+		Logger logger = LogManager.getLogger("org.iutools.elasticsearch.ElasticSearchDB.ensureIndicesAreDefined");
 		for (DocType docType: schema.docTypes()) {
+			logger.trace("Checking index for docType="+docType);
 			if (!indexExists4docType(docType)) {
 				defineIndexForDocType(docType);
 			}
@@ -78,13 +82,6 @@ public class ElasticSearchDB {
 
 	private void defineIndexForDocType(DocType docType) throws GenericESException {
 		String indexName = docType.indexName(dbName);
-
-//		URL url = null;
-//		try {
-//			url = new URL(ClientPool.baseURL()+indexName);
-//		} catch (MalformedURLException e) {
-//			throw new GenericESException(e);
-//		}
 
 		JSONObject properties = new JSONObject();
 		for (String fldName: docType.fieldNames()) {
@@ -99,13 +96,15 @@ public class ElasticSearchDB {
 		RestHighLevelClient client = ClientPool.getRestHighLevelClient();
         IndicesClient indices = client.indices();
 
-        PutMappingRequest request = new PutMappingRequest(indexName)
+		CreateIndexRequest request = new CreateIndexRequest(indexName)
                 .source(mapping.toString(), XContentType.JSON);
+		AcknowledgedResponse response = null;
 		try {
-			AcknowledgedResponse response =  indices.putMapping(request, RequestOptions.DEFAULT);
+			response =  indices.create(request, RequestOptions.DEFAULT);
 		} catch (IOException e) {
 			throw new GenericESException(e);
 		}
+		return;
 	}
 
 	/**
@@ -129,6 +128,9 @@ public class ElasticSearchDB {
 		return exists;
 	}
 	private synchronized boolean indexExists(String indexName) throws GenericESException {
+		Logger logger = LogManager.getLogger("org.iutools.elasticsearch.ElasticSearchDB.indexExists");
+		logger.trace("invoked with indexName="+indexName);
+
 		Boolean exists = null;
 		if (indexExists.containsKey(indexName)) {
 			exists = indexExists.get(indexName);
@@ -144,6 +146,8 @@ public class ElasticSearchDB {
 				throw new GenericESException(e);
 			}
 		}
+
+		logger.trace("for indexName="+indexName+", returning exists="+exists);
 		return exists;
 	}
 	private synchronized void createIndexIfNotExists(String indexName) throws GenericESException {
